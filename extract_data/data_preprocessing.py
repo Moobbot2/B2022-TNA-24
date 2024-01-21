@@ -1,10 +1,12 @@
 import pandas as pd
 from pyvi import ViUtils
-import xlsxwriter, os, math
+import xlsxwriter
+import os
+import math
 
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
-# precision_score, Recall
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+
 def get_excel(path):
     name = []
 
@@ -12,6 +14,7 @@ def get_excel(path):
     for i in df.columns:
         name.append(i)
     return name, df
+
 
 def get_info(df, infos):
 
@@ -33,17 +36,19 @@ def get_info(df, infos):
 
     return infos
 
+
 def get_data(infos):
     db_ngay_dau = []
-    db_kq = []
-    db_sv = []
+    db_code = []
+    db_hand = []
 
     for info in infos:
-        db_ngay_dau.append(info[2]) 
-        db_sv.append(info[1])
-        db_kq.append(info[0])
+        db_ngay_dau.append(info[2])
+        db_code.append(info[0])
+        db_hand.append(info[1])
 
-    return db_ngay_dau, db_sv, db_kq
+    return db_ngay_dau, db_hand, db_code
+
 
 def get_tc(data):
     TMP = []
@@ -54,7 +59,7 @@ def get_tc(data):
 
     if "non" in data and not "khong non" in data:
         TMP.append("nôn")
-    
+
     if "chan an" in data or "an uong kem" in data or "an ngu kem" in data:
         TMP.append("chán ăn")
 
@@ -113,10 +118,10 @@ def get_tc(data):
                 idx = data.index("ung thu")
             except:
                 idx = data.index("k")
-    
-            if not "chan doan" in data[:idx] and not "chuan doan" in data[:idx]:    
+
+            if not "chan doan" in data[:idx] and not "chuan doan" in data[:idx]:
                 TMP.append("tiền sử ung thư")
-    
+
     if "chup ct o bung co khoi u" in data or "chup ct o bung co u" in data:
         TMP.append("chụp CT ổ bụng có khối u")
 
@@ -125,27 +130,30 @@ def get_tc(data):
 
     return TMP
 
+
 def Convert(string):
     li = list(string.split(","))
     return li
 
+
 fields = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
-            "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm", 
-            "hoạch ngoại biên", "hạch thượng đòn", 
-            "bụng chướng", "phản ứng thành bụng", "cảm ứng phúc mạc", 
-            "dấu hiệu rắn bò", "quai ruột nổi", 
-            "sờ thấy khối u", "thăm trực tràng có khối u", "tiền sử ung thư",
-            "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u"]
+          "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm",
+          "hoạch ngoại biên", "hạch thượng đòn",
+          "bụng chướng", "phản ứng thành bụng", "cảm ứng phúc mạc",
+          "dấu hiệu rắn bò", "quai ruột nổi",
+          "sờ thấy khối u", "thăm trực tràng có khối u", "tiền sử ung thư",
+          "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u"]
 
-
+output_link = "./dataset/output.xlsx"
 if __name__ == "__main__":
-    if os.path.exists('dataset/output.xlsx'):
-        os.system("rm -rf dataset/output.xlsx")
+    if os.path.exists(output_link):
+        os.remove(output_link)
+        # os.system(f"rm -rf {output_link}")
 
-    workbook = xlsxwriter.Workbook('dataset/output.xlsx')
+    workbook = xlsxwriter.Workbook(output_link)
     worksheet = workbook.add_worksheet()
 
-    average='macro'
+    average = 'macro'
 
     bn = 0
     error = 0
@@ -160,9 +168,10 @@ if __name__ == "__main__":
 
     row = 1
 
-    input = "data"
-    input_sv = "data_sv"
-    output = "data_kq"
+    input = "./dataset/data"
+    input_sv = "./dataset/data_hand"
+    output = "./dataset/data_code"
+    os.makedirs(output, exist_ok=True)
 
     total_pred = []
     total_ground = []
@@ -180,6 +189,8 @@ if __name__ == "__main__":
         worksheet_kq.write(0, 5, "code -diff- sv")
         worksheet_kq.write(0, 6, "acc")
         worksheet_kq.write(0, 7, "f1 - score")
+        # worksheet_kq.write(0, 8, "precision score")
+        # worksheet_kq.write(0, 9, "recall score")
 
         path_excel = f"{input}/{xlsx}"
         infos = []
@@ -188,13 +199,13 @@ if __name__ == "__main__":
         infos = get_info(df, infos)
         data, _, kq = get_data(infos)
 
-        #-------------------------------------------------
+        # -------------------------------------------------
         path_excel1 = f"{input_sv}/{xlsx}"
         infos1 = []
         name1, df1 = get_excel(path_excel1)
         infos1 = get_info(df1, infos1)
         _, sv, _ = get_data(infos1)
-        #-------------------------------------------------
+        # -------------------------------------------------
 
         for id, _ in enumerate(data):
             bn += 1
@@ -207,11 +218,13 @@ if __name__ == "__main__":
             kq[id] = ViUtils.remove_accents(kq[id]).decode('utf-8')
 
             TMP = get_tc(data[id])
-            worksheet_kq.write(rol_kq, col, str(TMP).replace("[","").replace("]","").replace("'",""))
-            worksheet_kq.write(rol_kq, col+1, str(sv[id]).replace("  "," "))
+            worksheet_kq.write(rol_kq, col, str(TMP).replace(
+                "[", "").replace("]", "").replace("'", ""))
+            worksheet_kq.write(rol_kq, col+1, str(sv[id]).replace("  ", " "))
 
-            nampq_extract = Convert(str(TMP).replace("[","").replace("]","").replace("'",""))
-            sv_extract = Convert(str(sv[id]).replace("  "," "))
+            nampq_extract = Convert(str(TMP).replace(
+                "[", "").replace("]", "").replace("'", ""))
+            sv_extract = Convert(str(sv[id]).replace("  ", " "))
             # print(nampq_extract, sv_extract)
 
             nampq_extract_cp = nampq_extract.copy()
@@ -235,12 +248,12 @@ if __name__ == "__main__":
                         count_same += 1
                         nampq_extract[idn] = "0"
                         sv_extract[ids] = "0"
-            
+
             for n in nampq_extract:
                 if n != "0":
                     thua += n
                     thua += ", "
-            
+
             for s in sv_extract:
                 if s != "0":
                     thieu += s
@@ -256,10 +269,11 @@ if __name__ == "__main__":
 
             for idn, n in enumerate(nampq_extract_cp):
                 nampq_extract_cp[idn] = n.lower().strip()
-            
+
             for idn, n in enumerate(sv_extract_cp):
-                sv_extract_cp[idn] = n.lower().replace("-","").replace("  ", " ").strip()
-            
+                sv_extract_cp[idn] = n.lower().replace(
+                    "-", "").replace("  ", " ").strip()
+
             # print(nampq_extract_cp)
             # print(sv_extract_cp)
 
@@ -272,7 +286,7 @@ if __name__ == "__main__":
                     worksheet.write(row, col+idx, 0)
                     total_pred.append(0)
                     pred[idx] = 0
-            
+
                 if field.lower() in sv_extract_cp:
                     total_ground.append(1)
                     ground[idx] = 1
@@ -284,12 +298,15 @@ if __name__ == "__main__":
             # print(ground)
 
             acc = accuracy_score(ground, pred)
-            # f1 = f1_score(ground, pred)
             f1 = f1_score(ground, pred, average=average)
+            # p_s = precision_score(ground, pred)
+            # r_s = recall_score(ground, pred)
             # print(acc, f1)
 
             worksheet_kq.write(rol_kq, col+6, acc)
             worksheet_kq.write(rol_kq, col+7, f1)
+            # worksheet_kq.write(rol_kq, col+8, p_s)
+            # worksheet_kq.write(rol_kq, col+9, r_s)
 
             rol_kq += 1
 
@@ -311,7 +328,7 @@ if __name__ == "__main__":
                     error += 1
                     print("-------> ", id+2, path_excel, kq[id])
                     continue
-            
+
             # for idx, field in enumerate(fields):
             #     if field in TMP:
             #         worksheet.write(row, col+idx, 1)
@@ -319,7 +336,7 @@ if __name__ == "__main__":
             #         worksheet.write(row, col+idx, 0)
 
             row += 1
-        
+
         workbook_kq.close()
 
     workbook.close()
@@ -327,29 +344,12 @@ if __name__ == "__main__":
     print("\n Correct: ", correct_bn)
     print("\n Total error: ", error)
     print("\n Total bn: ", bn)
-    
+
     print("\n-------------TOTAL----------------\n")
     acc = accuracy_score(total_ground, total_pred)
     f1 = f1_score(total_ground, total_pred, average=average)
     print("ACC -------> ", acc)
     print("F1-SCORE --> ", f1)
+    # print("precision_score --> ", p_s)
+    # print("recall_score --> ", r_s)
     print("\n--------------END-----------------")
-
-# print precision_score, Recall
-
-# from pyvi import ViTokenizer, ViPosTagger
-
-# a= ViTokenizer.tokenize("Trường đại học bách khoa hà nội")
-# print(a)
-
-# b = ViPosTagger.postagging(ViTokenizer.tokenize("Không bị đau bụng"))
-# print(b)
-
-# from pyvi import ViUtils
-# c = ViUtils.remove_accents("Trường đại học bách khoa hà nội")
-# print(c)
-
-# from pyvi import ViUtils
-# d= ViUtils.add_accents('truong dai hoc bach khoa ha noi')
-# print(d)
-

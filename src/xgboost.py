@@ -5,18 +5,12 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_excel("./dataset/output.xlsx")
+from config import FEATURES, KQ, OUTPUT_LINK
 
-features = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
-            "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm",
-            "hoạch ngoại biên", "hạch thượng đòn",
-            "bụng chướng", "phản ứng thành bụng", "cảm ứng phúc mạc",
-            "dấu hiệu rắn bò", "quai ruột nổi",
-            "sờ thấy khối u", "thăm trực tràng có khối u", "tiền sử ung thư",
-            "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u"]
+df = pd.read_excel(OUTPUT_LINK)
 
-X = df[features]
-y = df['KQ']
+X = df[FEATURES]
+y = df[KQ]
 
 # Tách dữ liệu thành tập huấn luyện và tập kiểm tra
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)

@@ -3,19 +3,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import pandas as pd
 import joblib
+from config import FEATURES, KQ, OUTPUT_LINK
 
-df = pd.read_excel("./dataset/output.xlsx")
+df = pd.read_excel(OUTPUT_LINK)
 
-features = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
-            "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm",
-            "hoạch ngoại biên", "hạch thượng đòn",
-            "bụng chướng", "phản ứng thành bụng", "cảm ứng phúc mạc",
-            "dấu hiệu rắn bò", "quai ruột nổi",
-            "sờ thấy khối u", "thăm trực tràng có khối u", "tiền sử ung thư",
-            "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u"]
-
-X = df[features]
-y = df['KQ']
+X = df[FEATURES]
+y = df[KQ]
 
 # Chia dữ liệu thành tập huấn luyện và tập kiểm thử
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)

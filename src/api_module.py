@@ -4,6 +4,7 @@ import joblib
 import numpy as np
 from pyvi import ViUtils
 from ultis import get_tc
+from config import FEATURES, KQ, OUTPUT_LINK
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -11,14 +12,8 @@ CORS(app)  # Enable CORS for all routes
 global feature_names
 
 # Load the decision tree model
-loaded_model = joblib.load('model/decision_tree_model.joblib')
-loaded_model.feature_names = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
-                              "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm",
-                              "hoạch ngoại biên", "hạch thượng đòn",
-                              "bụng chướng", "phản ứng thành bụng", "cảm ứng phúc mạc",
-                              "dấu hiệu rắn bò", "quai ruột nổi",
-                              "sờ thấy khối u", "thăm trực tràng có khối u", "tiền sử ung thư",
-                              "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u"]
+loaded_model = joblib.load('model/cart_tree_model.joblib')
+loaded_model.feature_names = FEATURES
 
 
 def preprocess_feature(feature):

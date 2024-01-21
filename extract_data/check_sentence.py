@@ -1,4 +1,4 @@
-from run import get_tc
+from data_preprocessing import get_tc
 from pyvi import ViUtils
 # Tiền xử lý(dấu câu) + hậu xử lý ()
 
