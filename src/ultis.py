@@ -1,40 +1,3 @@
-import pandas as pd
-from pyvi import ViUtils
-import xlsxwriter
-import os
-import math
-
-
-def get_excel(path):
-    name = []
-
-    df = pd.read_excel(r"" + path)
-    for i in df.columns:
-        name.append(i)
-    return name, df
-
-
-def get_info(df, infos):
-
-    for r in range(len(df)):
-        data = []
-        for i in range(len(df.columns)):
-            nul = False
-            try:
-                nul = math.isnan(float(df.iloc[r, i]))
-            except:
-                data.append(str(df.iloc[r, i]))
-                continue
-            if nul == True:
-                data.append('null')
-            else:
-                data.append(str(df.iloc[r, i]))
-
-        infos.append(data)
-
-    return infos
-
-
 def get_tc(data):
     TMP = []
 
@@ -165,8 +128,3 @@ def get_tc(data):
         TMP.append(0)
 
     return TMP
-
-
-def Convert(string):
-    li = list(string.split(","))
-    return li
