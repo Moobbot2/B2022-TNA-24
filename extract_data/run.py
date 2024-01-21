@@ -139,10 +139,10 @@ fields = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
 
 
 if __name__ == "__main__":
-    if os.path.exists('hello.xlsx'):
-        os.system("rm -rf hello.xlsx")
+    if os.path.exists('dataset/output.xlsx'):
+        os.system("rm -rf dataset/output.xlsx")
 
-    workbook = xlsxwriter.Workbook('hello.xlsx')
+    workbook = xlsxwriter.Workbook('dataset/output.xlsx')
     worksheet = workbook.add_worksheet()
 
     average='macro'

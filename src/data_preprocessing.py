@@ -38,15 +38,15 @@ def get_info(df, infos):
 
 def get_data(infos):
     db_ngay_dau = []
-    db_kq = []
-    db_sv = []
+    db_code = []
+    db_hand = []
 
     for info in infos:
         db_ngay_dau.append(info[2])
-        db_sv.append(info[1])
-        db_kq.append(info[0])
+        db_code.append(info[0])
+        db_hand.append(info[1])
 
-    return db_ngay_dau, db_sv, db_kq
+    return db_ngay_dau, db_hand, db_code
 
 
 def get_tc(data):

@@ -4,7 +4,8 @@ from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
 import joblib
 
-df = pd.read_excel("./dataset/output.xlsx")
+df = pd.read_excel("hello.xlsx")
+# print(df)
 
 features = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
             "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm",
@@ -25,7 +26,7 @@ dtree = dtree.fit(X, y)
 feature_importance = dtree.feature_importances_
 
 # Specify the encoding when opening the log file
-log_file_path = 'output_tree/decision_tree_feature_importance.log'
+log_file_path = 'decision_tree_feature_importance.log'
 with open(log_file_path, 'w', encoding='utf-8') as log_file:
     for i, feature in enumerate(features):
         # Encode the feature name to handle non-ASCII characters
@@ -35,7 +36,7 @@ with open(log_file_path, 'w', encoding='utf-8') as log_file:
 
 
 # Save the model to a file
-joblib.dump(dtree, 'output_tree/decision_tree_model.joblib')
+joblib.dump(dtree, 'decision_tree_model.joblib')
 
 # Load the model later if needed
 loaded_model = joblib.load('decision_tree_model.joblib')
@@ -43,4 +44,7 @@ loaded_model = joblib.load('decision_tree_model.joblib')
 # Visualize and save the decision tree
 fig = plt.figure(figsize=(150, 80))
 _ = tree.plot_tree(dtree, feature_names=features, filled=True)
-fig.savefig("output_tree/decision_tree.png")
+fig.savefig("decision_tree.png")
+
+# Gini = 1 - (x/n)^2 - (y/n)^2
+# print(dtree.predict([[40, 10, 6, 1]]))
