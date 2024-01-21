@@ -1,17 +1,11 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import pandas as pd
 import joblib
-from config import FEATURES, KQ, OUTPUT_LINK
-
-df = pd.read_excel(OUTPUT_LINK)
-
-X = df[FEATURES]
-y = df[KQ]
+from datasets import X, Y
 
 # Chia dữ liệu thành tập huấn luyện và tập kiểm thử
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
 # Tạo và huấn luyện mô hình Random Forest trên tập huấn luyện
 rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -36,5 +30,4 @@ print(f'F1 Score: {f1_rf:.4f}')
 # Lưu mô hình Random Forest vào một tệp
 joblib.dump(rf_classifier, 'output_tree/random_forest_model_6_4.joblib')
 
-# Load mô hình sau này nếu cần
 # loaded_rf_model = joblib.load('output_tree/random_forest_model.joblib')

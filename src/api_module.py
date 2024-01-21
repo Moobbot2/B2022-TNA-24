@@ -1,23 +1,19 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import the CORS extension
+from flask_cors import CORS 
 import joblib
 import numpy as np
 from pyvi import ViUtils
 from ultis import get_tc
-from config import FEATURES, KQ, OUTPUT_LINK
+from config import FEATURES
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-global feature_names
-
-# Load the decision tree model
 loaded_model = joblib.load('model/cart_tree_model.joblib')
 loaded_model.feature_names = FEATURES
 
 
 def preprocess_feature(feature):
-    # Use ViUtils.remove_accents to remove accents from Vietnamese characters
     feature_without_accents_bytes = ViUtils.remove_accents(feature.lower())
     feature_without_accents = feature_without_accents_bytes.decode('utf-8')
 
@@ -25,7 +21,6 @@ def preprocess_feature(feature):
 
 
 def map_predictions_to_features(predictions, feature_names):
-    # Create a list of values (1 if feature is in predictions, 0 otherwise)
     result = [[1 if feature in predictions else 0 for feature in feature_names]]
     return result
 
@@ -52,7 +47,6 @@ def api_predict():
 
             predictions = predict(trieu_chung)
 
-            # Convert NumPy array to list
             predictions_list = predictions.tolist()
             text_return = "Không bị ung thư"
             if 1 in predictions_list:

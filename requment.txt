@@ -1,2 +1,4 @@
 pyvi
 xlsxwriter
+joblib
+graphviz

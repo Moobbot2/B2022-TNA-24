@@ -77,16 +77,19 @@ class CARTNode:
                     best_gini = gini_split
                     best_feature = feature_index
                     best_threshold = threshold
-        # Trả về chỉ số thuộc tính và giá trị ngưỡng tốt nhất sau khi duyệt qua tất cả các giá trị và thuộc tính.
+        # Trả về thuộc tính và giá trị ngưỡng tốt nhất sau khi duyệt qua tất cả các giá trị và thuộc tính.
         return best_feature, best_threshold
 
     def _build_tree(self, X, y):
+        # Kiểm tra điều kiện dừng xây dựng cây.
+        # Nếu độ sâu của nút bằng độ sâu tối đahoặc tất cả các nhãn trong tập dữ liệu là giống nhau,
+        # dừng xây dựng cây và gán giá trị dự đoán cho nút (self.value) là nhãn xuất hiện nhiều nhất.
         if self.depth == self.max_depth or np.all(y == y[0]):
             self.value = np.argmax(np.bincount(y))
             # Calculate Gini impurity for leaf nodes
             self.gini = self._calculate_gini(y)
             return
-
+        #  Tìm ra cặp thuộc tính và ngưỡng tối ưu để chia tập dữ liệu.
         feature, threshold = self._find_best_split(X, y)
 
         if feature is None:
@@ -95,8 +98,8 @@ class CARTNode:
             self.gini = self._calculate_gini(y)
             return
 
-        self.feature_index = feature
-        self.threshold = threshold
+        self.feature_index = feature # Gán chỉ số của thuộc tính cho nút.
+        self.threshold = threshold # Gán giá trị ngưỡng cho nút.
 
         X_left, y_left, X_right, y_right = self._split_data(
             X, y, feature, threshold)

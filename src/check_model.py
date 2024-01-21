@@ -1,21 +1,15 @@
-import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import joblib
-from config import FEATURES, KQ, OUTPUT_LINK
-# Assuming you have the dataset in a xlsx file named 'hello.xlsx'
-df = pd.read_excel(OUTPUT_LINK)
+from datasets import X, Y
 
-X = df[FEATURES]
-y = df[KQ]
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42)
-
+    X, Y, test_size=0.2, random_state=42)
 
 # Load the decision tree model
-loaded_model = joblib.load('./model/cart_tree_model.joblib')
+loaded_model = joblib.load('./model/xgboost_tree_8_2.json')
 
 # Make predictions on the testing data
 y_train_pred = loaded_model.predict(X_train.values)
