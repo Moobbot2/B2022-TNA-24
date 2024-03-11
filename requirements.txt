@@ -1,0 +1,6 @@
+pyvi
+xlsxwriter
+joblib
+graphviz
+flask
+Flask-Cors

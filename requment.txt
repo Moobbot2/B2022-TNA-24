@@ -1,4 +1,0 @@
-pyvi
-xlsxwriter
-joblib
-graphviz
