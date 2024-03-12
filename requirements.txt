@@ -4,3 +4,8 @@ joblib
 graphviz
 flask
 Flask-Cors
+pandas
+# connect database
+sqlalchemy
+openpyxl
+pymysql

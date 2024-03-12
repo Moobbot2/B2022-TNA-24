@@ -10,4 +10,10 @@ FEATURES = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân",
             "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u"]
 
 # Assuming the target variable is named 'KQ' (1 for cancer, 0 for no cancer)
-KQ = "KQ"
+KQ = "ket_qua"
+
+# Database sql
+DB_USERNAME = 'root'
+DB_PASSWORD = ''
+DB_HOST = 'localhost'
+DB_NAME = 'data_ungthu'
