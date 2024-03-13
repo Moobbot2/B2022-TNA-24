@@ -9,7 +9,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, Y, test_size=0.2, random_state=42)
 
 # Load the decision tree model
-loaded_model = joblib.load('./model/xgboost_tree_8_2.json')
+loaded_model = joblib.load('./output/model/xgboost_tree_8_2.json')
 
 # Make predictions on the testing data
 y_train_pred = loaded_model.predict(X_train.values)
