@@ -241,11 +241,9 @@
                             <input type="file" class="form-control js-file" id="file-upload" placeholder="Hồ sơ bệnh án"
                                 accept=".jpg, .png, .pdf" />
                         </div>
-                        <div class="">
+                        <div class="js-wrap">
                             <input type="hidden" name="ket_qua" value="0">
                             <button type="submit" class="btn btn-success">Dự đoán</button>
-                            <button type="button" class="btn btn-warning js-update-data d-none">Dấu hiệu đặc
-                                trưng</button>
                         </div>
                     </div>
                 </form>
@@ -264,6 +262,8 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    var btn_udpate_data = '<button type="button" class="btn btn-warning js-update-data">Trường hợp đặc trưng</button>';
+
     function predict(data) {
         $.ajax({
             type: "POST",
@@ -273,6 +273,7 @@
             success: function (response) {
                 // Display the predicted result
                 $(".js_check_crc").text(response.predictions);
+                $(".js-wrap").append(btn_udpate_data);
             },
             error: function (xrh, error) {
                 console.log("Error:", xrh);
@@ -283,7 +284,7 @@
 
     function insert_db(data) {
         // Ask the user if they want to proceed
-        if (confirm('Các triệu chứng này là dấu hiệu đặc trưng?')) {
+        if (confirm('Các triệu chứng này là trường hợp đặc trưng?')) {
             // If the user confirms, make the AJAX call
             $.ajax({
                 type: "POST",
@@ -308,6 +309,7 @@
     // Attach change event to checkboxes
     $('input[name="symptom"]').change(function () {
         $(".js_check_crc").text("");// Clear text when checkboxes change
+        $(".js-update-data").remove();
     });
 
     $('.js_form_submit').submit(function (e) {
@@ -332,15 +334,13 @@
         predict({ features: selectedSymptoms });
     });
 
-    $(".js-update-data").click(function (e) {
-        e.preventDefault();
-        // $('.js_check_crc').text('');
+    $(document).on("click", ".js-update-data", function () {
+        $('.js_check_crc').text('');
         // Get selected checkbox values
         var selectedSymptoms = [];
         $('input[name="symptom"]:checked').each(function () {
             selectedSymptoms.push($(this).val());
         });
-
         // Check if at least one symptom is selected
         if (selectedSymptoms.length === 0) {
             alert("Please select at least one symptom.");
@@ -353,7 +353,9 @@
         console.log("Call insert_db");
         // Make a prediction request
         insert_db({ features: selectedSymptoms });
+        $(".js-update-data").remove();
     });
+
     $(".js-update-model").click(function (e) {
         e.preventDefault();
         if (confirm('Cập nhật model?')) {

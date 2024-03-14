@@ -2,6 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from pyvi import ViUtils
 from config import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
+from unidecode import unidecode
 
 # Đường dẫn tới tệp Excel
 excel_file = 'dataset/output.xlsx'
@@ -10,7 +11,8 @@ excel_file = 'dataset/output.xlsx'
 df = pd.read_excel(excel_file)
 
 for col in df.columns:
-    new_col = ViUtils.remove_accents(col).decode('utf-8').replace(' ', '_')
+    # new_col = ViUtils.remove_accents(col).decode('utf-8').replace(' ', '_')
+    new_col = unidecode(col).replace(' ', '_')
     df.rename(columns={col: new_col}, inplace=True)
 print(df)
 

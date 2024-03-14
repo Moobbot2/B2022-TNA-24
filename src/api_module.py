@@ -12,6 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 latest_model_path = get_last_modified_model(SAVE_MODEL_PATH, MODEL_USE)
+print(f"Load model: {latest_model_path}")
 
 if latest_model_path:
     loaded_model = joblib.load(latest_model_path)
@@ -40,10 +41,11 @@ def map_predictions_to_features(predictions, feature_names):
 
 
 def predict(features):
-    trieu_chung = process_symptoms(features)
-    if 1 not in trieu_chung:
+    p_s = process_symptoms(features)
+    if 1 not in p_s:
         return [0]
-    predictions = loaded_model.predict([trieu_chung])
+    print("process_symptoms:", p_s)
+    predictions = loaded_model.predict([p_s])
     print("predictions:", predictions)
     return predictions
 
@@ -58,7 +60,6 @@ def api_predict():
             print('trieu_chung:', trieu_chung)
             print('===========================')
             predictions = predict(trieu_chung)
-            predictions_list = predictions.tolist()
             text_return = "Không bị ung thư" if predictions[0] == 0 else "Có khả năng bị ung thư"
             return jsonify({'predictions': text_return})
         else:
@@ -100,7 +101,7 @@ def api_save_data():
 
             save_symptoms_to_database(symptoms, TABLE_NAME)
 
-            return jsonify({'predictions': 'hello'})
+            return jsonify({'predictions': 'Đã cập nhật.'})
         else:
             return jsonify({'error': 'Invalid JSON format'}), 400
 
