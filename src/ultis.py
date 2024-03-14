@@ -134,9 +134,9 @@ def get_tc(data):
     return TMP
 
 
-def get_last_modified_model(directory):
-    models = [file for file in os.listdir(
-        directory) if file.endswith('.joblib')]
+def get_last_modified_model(directory, prefix):
+    models = [file for file in os.listdir(directory) if file.startswith(
+        prefix) and file.endswith('.joblib')]
     if not models:
         return None
     latest_model = max(models, key=lambda x: os.path.getmtime(

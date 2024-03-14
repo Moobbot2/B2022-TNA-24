@@ -15,5 +15,11 @@ DB_PASSWORD = ''
 DB_HOST = 'localhost'
 DB_NAME = 'data_ungthu'
 TABLE_NAME = 'trieu_chung_va_chuan_doan'
-SAVE_MODEL_PATH = 'output/model/'
-SAVE_TREE_PATH = 'output/image_tree/'
+SAVE_MODEL_PATH = 'output/model'
+SAVE_TREE_PATH = 'output/image_tree'
+SAVE_LOG_PATH = 'output/log'
+
+TEST_SIZE = 0.2
+RAMDOM_STATE = 42
+N_ESTIMATORS = 100
+MODEL_USE = 'DecisionTree'  # DecisionTree or RandomForest or XGBoost

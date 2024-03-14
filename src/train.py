@@ -1,10 +1,9 @@
 import program
 from datasets import X, Y
-from config import SAVE_MODEL_PATH, SAVE_TREE_PATH
 
 print('Train DecisionTree')
-program.train_evaluate_visualize_decision_tree(X, Y, classifier_type='DecisionTree',
-                                               save_model_path=SAVE_MODEL_PATH, save_tree_path=SAVE_TREE_PATH)
+program.train_evaluate_visualize_decision_tree(
+    X, Y, classifier_type='DecisionTree')
 print('----- ----- -----')
 
 # print('Train RandomForest')
