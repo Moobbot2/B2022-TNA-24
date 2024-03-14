@@ -1,5 +1,6 @@
 import numpy as np
 from graphviz import Digraph
+import matplotlib.pyplot as plt
 
 
 class CARTNode:
@@ -98,8 +99,8 @@ class CARTNode:
             self.gini = self._calculate_gini(y)
             return
 
-        self.feature_index = feature # Gán chỉ số của thuộc tính cho nút.
-        self.threshold = threshold # Gán giá trị ngưỡng cho nút.
+        self.feature_index = feature  # Gán chỉ số của thuộc tính cho nút.
+        self.threshold = threshold  # Gán giá trị ngưỡng cho nút.
 
         X_left, y_left, X_right, y_right = self._split_data(
             X, y, feature, threshold)
@@ -129,7 +130,7 @@ class CARTNode:
     def predict(self, X):
         return np.array([self.predict_sample(sample) for sample in X])
 
-    def visualize_tree(self, feature_names, class_names, file_name='tree'):
+    def visualize_tree_graphviz(self, feature_names, class_names, file_name='tree'):
         dot = Digraph(comment='Decision Tree')
 
         def add_node(node, parent_name=None, edge_label=None):
@@ -153,3 +154,20 @@ class CARTNode:
 
         # Save the tree visualization as a PNG file
         dot.render(file_name, format='png', cleanup=True)
+
+    def visualize_tree_txt(self, feature_names, class_names, file_name='tree.txt'):
+        def write_tree(node, file, indent=''):
+            if node.feature_index is not None:
+                feature_name = feature_names[node.feature_index]
+                file.write(
+                    f"{indent}if {feature_name} <= {node.threshold:.2f}:\n")
+            else:
+                file.write(f"{indent}return Class {class_names[node.value]}\n")
+
+            if node.left is not None:
+                write_tree(node.left, file, indent + '  ')
+            if node.right is not None:
+                write_tree(node.right, file, indent + '  ')
+
+        with open(file_name, 'w', encoding='utf-8') as file:  # Specify encoding as 'utf-8'
+            write_tree(self, file)

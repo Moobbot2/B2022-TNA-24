@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
     for idx, field in enumerate(fields):
         worksheet.write(row, col+idx, field)
-    worksheet.write(row, col+len(fields), "KQ")
+    worksheet.write(row, col+len(fields), "ket_qua")
 
     row = 1
 

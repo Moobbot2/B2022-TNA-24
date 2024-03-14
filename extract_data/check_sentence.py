@@ -1,3 +1,4 @@
+from unidecode import unidecode
 from data_preprocessing import get_tc
 from pyvi import ViUtils
 # Tiền xử lý(dấu câu) + hậu xử lý ()
@@ -6,11 +7,16 @@ status = "Bệnh nhân nam 60 tuổi. Tiền sử K đại tràng di căn gan ( 
 "
 
 status = status.lower()
-status = ViUtils.remove_accents(status).decode('utf-8')
-print(status)
+status_1 = ViUtils.remove_accents(status).decode('utf-8')
+print(status_1)
+print('-------------')
+status_2 = unidecode(status)
+print(status_2)
 
-TMP = get_tc(status)
+TMP = get_tc(status_1)
 
 print(TMP)
 
+TMP = get_tc(status_2)
 
+print(TMP)

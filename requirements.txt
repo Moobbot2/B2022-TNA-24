@@ -4,3 +4,12 @@ joblib
 graphviz
 flask
 Flask-Cors
+pandas
+# model
+scikit-learn
+xgboost
+# connect database
+sqlalchemy
+openpyxl
+pymysql
+mysql-connector-python
