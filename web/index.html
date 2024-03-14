@@ -31,6 +31,8 @@
       height: 100vh;
       min-width: 300px !important;
     ">
+    <div class="position-fixed"><button type="button" class="btn btn-danger js-update-model">Cập nhật mô hình</button>
+    </div>
     <div class="container h-100 d-flex justify-content-center align-items-center">
         <main>
             <div class="card text-dark border-custom-4" style="background-color: #c5f5ffb5">
@@ -352,6 +354,30 @@
         // Make a prediction request
         insert_db({ features: selectedSymptoms });
     });
+    $(".js-update-model").click(function (e) {
+        e.preventDefault();
+        if (confirm('Cập nhật model?')) {
+            // If the user confirms, make the AJAX call
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:5000/api_update_module",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    // Display the predicted result
+                    $(".js_check_crc").text(response.message);
+                    alert(response.message)
+                },
+                error: function (xrh, error) {
+                    console.log("Error:", xrh);
+                    alert(xrh.responseJSON.error);
+                },
+            });
+        } else {
+            // If the user cancels, do nothing
+            console.log('User canceled the operation.');
+        }
+    });
+
 </script>
 
 </html>

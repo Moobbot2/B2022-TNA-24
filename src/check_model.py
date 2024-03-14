@@ -3,7 +3,6 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import joblib
 from datasets import X, Y
 
-
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(
     X, Y, test_size=0.2, random_state=42)

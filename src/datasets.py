@@ -1,6 +1,6 @@
 import pandas as pd
 import program_database
-from config import FEATURES, KQ, OUTPUT_LINK, TABLE_NAME
+from config import FEATURES, KQ, TABLE_NAME
 
 # Connect to the database
 mydb = program_database.connect_to_database()

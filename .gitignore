@@ -1,4 +1,5 @@
-data*/*
+dataset/data_*
 *.xlsx
 *.odp
 *.pdf
+output
