@@ -242,7 +242,8 @@
                         <div class="">
                             <input type="hidden" name="ket_qua" value="0">
                             <button type="submit" class="btn btn-success">Dự đoán</button>
-                            <button type="button" class="btn btn-warning js-update-data">Dấu hiệu đặc trưng</button>
+                            <button type="button" class="btn btn-warning js-update-data d-none">Dấu hiệu đặc
+                                trưng</button>
                         </div>
                     </div>
                 </form>
@@ -277,21 +278,29 @@
             },
         });
     }
+
     function insert_db(data) {
-        $.ajax({
-            type: "POST",
-            url: "http://127.0.0.1:5000/api_save_data",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(data),
-            success: function (response) {
-                // Display the predicted result
-                $(".js_check_crc").text(response.predictions);
-            },
-            error: function (xrh, error) {
-                console.log("Error:", xrh);
-                alert(xrh.responseJSON.error);
-            },
-        });
+        // Ask the user if they want to proceed
+        if (confirm('Các triệu chứng này là dấu hiệu đặc trưng?')) {
+            // If the user confirms, make the AJAX call
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:5000/api_save_data",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    // Display the predicted result
+                    $(".js_check_crc").text(response.predictions);
+                },
+                error: function (xrh, error) {
+                    console.log("Error:", xrh);
+                    alert(xrh.responseJSON.error);
+                },
+            });
+        } else {
+            // If the user cancels, do nothing
+            console.log('User canceled the operation.');
+        }
     }
 
     // Attach change event to checkboxes

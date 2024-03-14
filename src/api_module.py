@@ -4,12 +4,14 @@ from flask_cors import CORS
 import joblib
 from pyvi import ViUtils
 from ultis import get_tc, get_last_modified_model
-from config import FEATURES, SAVE_MODEL_PATH, TABLE_NAME
+from config import FEATURES, SAVE_MODEL_PATH, TABLE_NAME, MODEL_USE
+import program
+from datasets import X, Y
+
 app = Flask(__name__)
 CORS(app)
-print(SAVE_MODEL_PATH)
-latest_model_path = get_last_modified_model(SAVE_MODEL_PATH)
-print(latest_model_path)
+
+latest_model_path = get_last_modified_model(SAVE_MODEL_PATH, MODEL_USE)
 
 if latest_model_path:
     loaded_model = joblib.load(latest_model_path)
@@ -39,9 +41,10 @@ def map_predictions_to_features(predictions, feature_names):
 
 def predict(features):
     trieu_chung = process_symptoms(features)
-    print(trieu_chung)
+    if 1 not in trieu_chung:
+        return [0]
     predictions = loaded_model.predict([trieu_chung])
-    print(f'predictions: {predictions}')
+    print("predictions:", predictions)
     return predictions
 
 
@@ -54,14 +57,9 @@ def api_predict():
             print('===========================')
             print('trieu_chung:', trieu_chung)
             print('===========================')
-
             predictions = predict(trieu_chung)
-            print(predict)
             predictions_list = predictions.tolist()
-            text_return = "Không bị ung thư"
-            if 1 in predictions_list:
-                text_return = "Có khả năng bị ung thư"
-
+            text_return = "Không bị ung thư" if predictions[0] == 0 else "Có khả năng bị ung thư"
             return jsonify({'predictions': text_return})
         else:
             return jsonify({'error': 'Invalid JSON format'}), 400
@@ -106,6 +104,16 @@ def api_save_data():
         else:
             return jsonify({'error': 'Invalid JSON format'}), 400
 
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api_update_module', methods=['POST'])
+def api_update_module():
+    try:
+        program.train_evaluate_visualize_decision_tree(
+            X, Y, classifier_type='DecisionTree')
+        return jsonify({'message': 'Cập nhật model thành công!'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
