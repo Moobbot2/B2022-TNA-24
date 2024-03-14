@@ -1,3 +1,4 @@
+from traceback import print_tb
 import mysql.connector
 from config import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
 
@@ -41,7 +42,11 @@ def fetch_data_from_table(mydb, table_name):
 
 
 def insert_data_into_table(mydb, table_name, data):
+    print('----- insert_data_into_table -----')
     try:
+        # If data is not already a list of lists, convert it to one
+        if not isinstance(data[0], list):
+            data = [data]
         # Creating a cursor
         mycursor = mydb.cursor()
 

@@ -1,3 +1,7 @@
+import os
+import joblib
+
+
 def get_tc(data):
     TMP = []
 
@@ -128,3 +132,13 @@ def get_tc(data):
         TMP.append(0)
 
     return TMP
+
+
+def get_last_modified_model(directory):
+    models = [file for file in os.listdir(
+        directory) if file.endswith('.joblib')]
+    if not models:
+        return None
+    latest_model = max(models, key=lambda x: os.path.getmtime(
+        os.path.join(directory, x)))
+    return os.path.join(directory, latest_model)

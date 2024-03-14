@@ -25,16 +25,22 @@
     </style>
 </head>
 
-<body class="bg-light"
-    style="background: url('./bg-0.jpg') no-repeat center center/cover; width: 100vw; height: 100vh; min-width: 300px !important;">
+<body class="bg-light" style="
+      background: url('./bg-0.jpg') no-repeat center center/cover;
+      width: 100vw;
+      height: 100vh;
+      min-width: 300px !important;
+    ">
     <div class="container h-100 d-flex justify-content-center align-items-center">
         <main>
-            <div class="card text-dark border-custom-4" style="background-color:#c5f5ffb5;">
+            <div class="card text-dark border-custom-4" style="background-color: #c5f5ffb5">
                 <div class="card-header position-relative">
-                    <div class="logo-who position-absolute" style="width: 50px;">
-                        <img src="./who-logo-png.png" alt="" class="img-fluid">
+                    <div class="logo-who position-absolute" style="width: 50px">
+                        <img src="./who-logo-png.png" alt="" class="img-fluid" />
                     </div>
-                    <h1 class="card-title text-center">Biểu mẫu dự đoán Ung thư đại trực tràng</h1>
+                    <h1 class="card-title text-center">
+                        Biểu mẫu dự đoán Ung thư đại trực tràng
+                    </h1>
                 </div>
                 <form action class="js_form_submit">
                     <div class="card-body">
@@ -113,8 +119,8 @@
                             <div class="col-lg-4 col-sm-6">
                                 <div class="form-group">
                                     <div class="form-check d-flex align-items-center">
-                                        <input type="checkbox" class="form-check-input" name="symptom" value="da xạm" />
-                                        <label for="" class="form-label">Da xạm</label>
+                                        <input type="checkbox" class="form-check-input" name="symptom" value="da sạm" />
+                                        <label for="" class="form-label">Da sạm</label>
                                     </div>
                                 </div>
                             </div>
@@ -229,15 +235,23 @@
                         </div>
                     </div>
                     <div class="card-footer text-center">
-                        <button type="submit" class="btn btn-success">Dự đoán</button>
+                        <div class="input-group mb-2">
+                            <input type="file" class="form-control js-file" id="file-upload" placeholder="Hồ sơ bệnh án"
+                                accept=".jpg, .png, .pdf" />
+                        </div>
+                        <div class="">
+                            <input type="hidden" name="ket_qua" value="0">
+                            <button type="submit" class="btn btn-success">Dự đoán</button>
+                            <button type="button" class="btn btn-warning js-update-data">Dấu hiệu đặc trưng</button>
+                        </div>
                     </div>
                 </form>
             </div>
-            <div class="card text-dark border-custom-4 mt-4" style="width: 100%; background-color: #89ffc8;">
+            <div class="card text-dark border-custom-4 mt-4" style="width: 100%; background-color: #89ffc8">
                 <div class="card-header">
                     <h5 class="card-title">Kết quả dự đoán</h5>
                 </div>
-                <div class="card-body" style="height: 80px;">
+                <div class="card-body" style="height: 80px">
                     <h3 class="card-text js_check_crc text-center"></h3>
                 </div>
             </div>
@@ -255,23 +269,34 @@
             data: JSON.stringify(data),
             success: function (response) {
                 // Display the predicted result
-                $('.js_check_crc').text(response.predictions);
+                $(".js_check_crc").text(response.predictions);
             },
             error: function (xrh, error) {
                 console.log("Error:", xrh);
-                alert(xrh.responseJSON.error)
-            }
+                alert(xrh.responseJSON.error);
+            },
         });
     }
-    
-    // Function to clear text inside js_check_crc
-    function clearCheckCRC() {
-        $('.js_check_crc').text('');
+    function insert_db(data) {
+        $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:5000/api_save_data",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(data),
+            success: function (response) {
+                // Display the predicted result
+                $(".js_check_crc").text(response.predictions);
+            },
+            error: function (xrh, error) {
+                console.log("Error:", xrh);
+                alert(xrh.responseJSON.error);
+            },
+        });
     }
 
     // Attach change event to checkboxes
     $('input[name="symptom"]').change(function () {
-        clearCheckCRC(); // Clear text when checkboxes change
+        $(".js_check_crc").text("");// Clear text when checkboxes change
     });
 
     $('.js_form_submit').submit(function (e) {
@@ -294,6 +319,29 @@
         console.log('Call predict');
         // Make a prediction request
         predict({ features: selectedSymptoms });
+    });
+
+    $(".js-update-data").click(function (e) {
+        e.preventDefault();
+        // $('.js_check_crc').text('');
+        // Get selected checkbox values
+        var selectedSymptoms = [];
+        $('input[name="symptom"]:checked').each(function () {
+            selectedSymptoms.push($(this).val());
+        });
+
+        // Check if at least one symptom is selected
+        if (selectedSymptoms.length === 0) {
+            alert("Please select at least one symptom.");
+            return;
+        }
+        selectedSymptoms.push($('input[name="ket_qua"]').val());
+
+        // Log the selected symptoms to the console
+        console.log(selectedSymptoms);
+        console.log("Call insert_db");
+        // Make a prediction request
+        insert_db({ features: selectedSymptoms });
     });
 </script>
 
