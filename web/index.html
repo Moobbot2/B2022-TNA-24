@@ -294,6 +294,9 @@
                 success: function (response) {
                     // Display the predicted result
                     $(".js_check_crc").text(response.predictions);
+                    if (response.error) {
+                        console.log(response.error);
+                    }
                 },
                 error: function (xrh, error) {
                     console.log("Error:", xrh);

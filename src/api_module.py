@@ -70,11 +70,15 @@ def api_predict():
 
 
 def save_symptoms_to_database(symptoms, table_name):
-    mydb = program_database.connect_to_database()
-    if mydb:
-        program_database.insert_data_into_table(mydb, table_name, symptoms)
-        return True
-    return False
+    try:
+        mydb = program_database.connect_to_database()
+        if mydb:
+            program_database.insert_data_into_table(mydb, table_name, symptoms)
+            return True
+        return False
+    except Exception as e:
+        print("Error saving symptoms to database:", str(e))
+        return False
 
 
 @app.route('/api_save_data', methods=['POST'])
@@ -98,10 +102,11 @@ def api_save_data():
             # Append the preprocessed result
             symptoms.append(ket_qua)
             print(symptoms)
-
-            save_symptoms_to_database(symptoms, TABLE_NAME)
-
-            return jsonify({'predictions': 'Đã cập nhật.'})
+            # Attempt to save symptoms to the database
+            if save_symptoms_to_database(symptoms, TABLE_NAME):
+                return jsonify({'predictions': 'Đã cập nhật.'}), 200
+            else:
+                return jsonify({'error': 'Failed to save symptoms to database'}), 500
         else:
             return jsonify({'error': 'Invalid JSON format'}), 400
 

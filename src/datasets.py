@@ -2,6 +2,9 @@ import pandas as pd
 import program_database
 from config import FEATURES, KQ, TABLE_NAME
 
+X = FEATURES
+Y = KQ
+
 # Connect to the database
 mydb = program_database.connect_to_database()
 
