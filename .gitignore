@@ -2,4 +2,5 @@ dataset/data_*/
 *.xlsx
 *.odp
 *.pdf
-output/
+output/image_tree
+output/model

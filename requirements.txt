@@ -13,3 +13,4 @@ sqlalchemy
 openpyxl
 pymysql
 mysql-connector-python
+matplotlib
