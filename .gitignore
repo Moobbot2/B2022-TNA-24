@@ -1,5 +1,5 @@
-dataset/data_*
+dataset/data_*/
 *.xlsx
 *.odp
 *.pdf
-output
+output/
