@@ -25,9 +25,10 @@ os.makedirs(output_folder, exist_ok=True)
 # Create output/cell subfolder if it doesn't exist
 cell_output_folder = os.path.join(output_folder, "cell")
 os.makedirs(cell_output_folder, exist_ok=True)
-    
+
+
 # Function to process a single page
-def process_page(page, output_folder, page_number):
+def process_page(page, output_folder, page_number, col_get=3):
     # Preprocess page
     enhanced_page = preprocess(page, factor=3)
     img_bin = binarize_image(enhanced_page)
@@ -79,12 +80,11 @@ def process_page(page, output_folder, page_number):
             cv2.rectangle(enhanced_page, (left, top), (right, bottom), (0, 0, 255), 2)
             cells.append([left, top, right, bottom])
 
-
     print("Crop cells and save")
     prev_left = cells[0][0]
     row_counter = 1
     col_counter = 0
-    cells_tinhtrang_bn=[]
+    cells_tinhtrang_bn = []
     for i, cell in enumerate(cells):
         left, top, right, bottom = cell
         if int(left) == int(prev_left) and i != 0:
@@ -92,7 +92,7 @@ def process_page(page, output_folder, page_number):
             col_counter = 1
         else:
             col_counter += 1
-        if col_counter == 3 and row_counter > 1:
+        if col_counter == col_get and row_counter > 1:
             cell_image = page[top:bottom, left:right]
             cell_filename = f"page_{page_number}_cell_{row_counter}_{col_counter}.jpg"
             cell_filepath = os.path.join(cell_output_folder, cell_filename)
@@ -119,6 +119,7 @@ def process_page(page, output_folder, page_number):
         print(horizontal_list)
         print("--------------")
 
+
 def main():
     # Đường dẫn đến tài liệu PDF chứa bảng
     pdf_path = "./dataset/cham_soc.pdf"
@@ -126,11 +127,12 @@ def main():
     # Sử dụng pdf2image để chuyển các trang PDF thành hình ảnh
     pages = convert_from_path(pdf_path, poppler_path=r"./poppler-24.02.0/Library/bin")
     
+    # Chăm sóc lấy cột 3, điều trị lấy cột 2
+    col_get = 3
     # Process each page
     for i, page in enumerate(pages):
-        process_page(np.array(page), output_folder, i + 1)
+        process_page(np.array(page), output_folder, i + 1, col_get)
     # process_page(np.array(pages[0]), output_folder, 0 + 1)
-    
 
 
 if __name__ == "__main__":
