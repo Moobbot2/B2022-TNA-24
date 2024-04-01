@@ -23,7 +23,7 @@ MAX_LINE_GAP = 250
 # Function to process a single page
 def process_page(page, output_folder, page_number):
     # Preprocess page
-    enhanced_page = preprocess(page, factor=8)
+    enhanced_page = preprocess(page, factor=4)
     img_bin = binarize_image(enhanced_page)
 
     # Detect horizontal lines
@@ -41,6 +41,7 @@ def process_page(page, output_folder, page_number):
     )
     new_vertical_lines = group_vertical_lines(v_lines, kernel_len)
 
+    print("Find intersection points")
     # Find intersection points
     points = []
     for hline in new_horizontal_lines:
@@ -55,6 +56,7 @@ def process_page(page, output_folder, page_number):
             if x1A <= x <= x2A and y1B <= y <= y2B:
                 points.append([int(x), int(y)])
 
+    print("Draw rectangles around cells")
     # Draw rectangles around cells
     cells = []
     for point in points:
@@ -71,11 +73,26 @@ def process_page(page, output_folder, page_number):
             cv2.rectangle(enhanced_page, (left, top), (right, bottom), (0, 0, 255), 2)
             cells.append([left, top, right, bottom])
 
-    
-
+    out_img_link = os.path.join(output_folder, f"page_{page_number}.jpg")
+    print(f"Save the processed page {out_img_link}")
     # Save the processed page
-    cv2.imwrite(os.path.join(output_folder, f"page_{page_number}.jpg"), enhanced_page)
+    cv2.imwrite(out_img_link, enhanced_page)
 
+    print("Start ocr text")
+    final_horizontal_list = []
+    for cell in cells:
+        cell_x_min, cell_y_min, cell_x_max, cell_y_max = cell
+        cell_image = page[
+            cell_y_min:cell_y_max, cell_x_min:cell_x_max
+        ]  # Use 'page' instead of 'table_image'
+
+        # Convert cell image to RGB format
+        cell_image_rgb = cv2.cvtColor(cell_image, cv2.COLOR_BGR2RGB)
+
+        # Read text from cell using EasyOCR
+        horizontal_list = reader.readtext(cell_image_rgb, detail=0)
+        print(horizontal_list)
+        print("--------------")
 
 def main():
     # Đường dẫn đến tài liệu PDF chứa bảng
