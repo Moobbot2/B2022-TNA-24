@@ -82,10 +82,9 @@ def process_page(page, output_folder, page_number):
 
     print("Crop cells and save")
     prev_left = cells[0][0]
-    print(f"prev_left = {prev_left}")
     row_counter = 1
     col_counter = 0
-    table_cc = []
+    cells_tinhtrang_bn=[]
     for i, cell in enumerate(cells):
         left, top, right, bottom = cell
         if int(left) == int(prev_left) and i != 0:
@@ -93,32 +92,32 @@ def process_page(page, output_folder, page_number):
             col_counter = 1
         else:
             col_counter += 1
-        if col_counter == 3:
+        if col_counter == 3 and row_counter > 1:
             cell_image = page[top:bottom, left:right]
             cell_filename = f"page_{page_number}_cell_{row_counter}_{col_counter}.jpg"
             cell_filepath = os.path.join(cell_output_folder, cell_filename)
             cv2.imwrite(cell_filepath, cell_image)
-
+            cells_tinhtrang_bn.append(cell)
     out_img_link = os.path.join(output_folder, f"page_{page_number}.jpg")
     print(f"Save the processed page {out_img_link}")
     # Save the processed page
     cv2.imwrite(out_img_link, enhanced_page)
-    
-    # print("Start ocr text")
-    # final_horizontal_list = []
-    # for cell in cells:
-    #     cell_x_min, cell_y_min, cell_x_max, cell_y_max = cell
-    #     cell_image = page[
-    #         cell_y_min:cell_y_max, cell_x_min:cell_x_max
-    #     ]  # Use 'page' instead of 'table_image'
 
-    #     # Convert cell image to RGB format
-    #     cell_image_rgb = cv2.cvtColor(cell_image, cv2.COLOR_BGR2RGB)
+    print("Start ocr text")
+    final_horizontal_list = []
+    for cell in cells_tinhtrang_bn:
+        cell_x_min, cell_y_min, cell_x_max, cell_y_max = cell
+        cell_image = page[
+            cell_y_min:cell_y_max, cell_x_min:cell_x_max
+        ]  # Use 'page' instead of 'table_image'
 
-    #     # Read text from cell using EasyOCR
-    #     horizontal_list = reader.readtext(cell_image_rgb, detail=0)
-    #     print(horizontal_list)
-    #     print("--------------")
+        # Convert cell image to RGB format
+        cell_image_rgb = cv2.cvtColor(cell_image, cv2.COLOR_BGR2RGB)
+
+        # Read text from cell using EasyOCR
+        horizontal_list = reader.readtext(cell_image_rgb, detail=0)
+        print(horizontal_list)
+        print("--------------")
 
 def main():
     # Đường dẫn đến tài liệu PDF chứa bảng
@@ -128,9 +127,9 @@ def main():
     pages = convert_from_path(pdf_path, poppler_path=r"./poppler-24.02.0/Library/bin")
     
     # Process each page
-    # for i, page in enumerate(pages):
-    #     process_page(np.array(page), output_folder, i + 1)
-    process_page(np.array(pages[0]), output_folder, 0 + 1)
+    for i, page in enumerate(pages):
+        process_page(np.array(page), output_folder, i + 1)
+    # process_page(np.array(pages[0]), output_folder, 0 + 1)
     
 
 
