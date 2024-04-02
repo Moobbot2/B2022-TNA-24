@@ -16,11 +16,11 @@ def get_tc(data):
 
     # Define symptoms and medical conditions along with their variants
     symptoms = [
-        ("dau bung", "tuc bung"),
+        ("dau bung", "tuc bung", "bung dau"),
         ("non"),
         ("chan an", "an uong kem", "an ngu kem"),
         ("tao bon",),
-        ("sut can", "giam can"),
+        ("sut can", "giam can", "gay sut"),
         ("tieu chay"),
         ("phan co mau", "di ngoai ra mau"),
         ("da niem mac vang",),
