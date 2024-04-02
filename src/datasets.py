@@ -1,6 +1,11 @@
 import pandas as pd
-import program_database
 from config import FEATURES, KQ, TABLE_NAME
+
+import sys
+
+sys.path.insert(0, "./src_database")
+
+import program_database
 
 X = FEATURES
 Y = KQ

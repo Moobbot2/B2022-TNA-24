@@ -1,16 +1,19 @@
+# pip install mysql-connector-python
 from traceback import print_tb
 import mysql.connector
+import sys
+
+sys.path.insert(0, "./src")
 from config import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
 
 
-def connect_to_database(db_username=DB_USERNAME, db_password=DB_PASSWORD, db_host=DB_HOST, db_name=DB_NAME):
+def connect_to_database(
+    db_username=DB_USERNAME, db_password=DB_PASSWORD, db_host=DB_HOST, db_name=DB_NAME
+):
     try:
         # Creating connection object
         mydb = mysql.connector.connect(
-            host=db_host,
-            user=db_username,
-            password=db_password,
-            database=db_name
+            host=db_host, user=db_username, password=db_password, database=db_name
         )
         return mydb
     except mysql.connector.Error as error:
@@ -42,7 +45,7 @@ def fetch_data_from_table(mydb, table_name):
 
 
 def insert_data_into_table(mydb, table_name, data):
-    print('----- insert_data_into_table -----')
+    print("----- insert_data_into_table -----")
     try:
         # If data is not already a list of lists, convert it to one
         if not isinstance(data[0], list):
@@ -70,7 +73,7 @@ def insert_data_into_table(mydb, table_name, data):
 
 def main():
     # Example usage:
-    table_name = 'trieu_chung_va_chuan_doan'
+    table_name = "trieu_chung_va_chuan_doan"
     # data_to_insert = [
     #     (value1, value2, ...),  # Each tuple represents a row of data
     #     (value1, value2, ...),
@@ -90,5 +93,5 @@ def main():
         print(row)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

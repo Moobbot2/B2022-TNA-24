@@ -1,8 +1,7 @@
 {
     "liveServer.settings.port": 5501,
     "[python]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "ms-python.autopep8"
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.analysis.autoImportCompletions": true
 }

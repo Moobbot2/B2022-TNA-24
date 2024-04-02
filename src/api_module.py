@@ -1,4 +1,3 @@
-import program_database
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -6,7 +5,11 @@ from pyvi import ViUtils
 from ultis import get_tc, get_last_modified_model
 from config import FEATURES, SAVE_MODEL_PATH, TABLE_NAME, MODEL_USE
 import program
-from datasets import X, Y
+from datasets import X, Y, mydb
+import sys
+
+sys.path.insert(0, "./src_database")
+import program_database
 
 app = Flask(__name__)
 CORS(app)
@@ -117,11 +120,14 @@ def api_save_data():
 @app.route('/api_update_module', methods=['POST'])
 def api_update_module():
     try:
+        mydb
         program.train_evaluate_visualize_decision_tree(
             X, Y, classifier_type='DecisionTree')
         return jsonify({'message': 'Cập nhật model thành công!'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Nhiều triệu chứng vào => Sinh ra độ đo đánh giá
 
 
 if __name__ == '__main__':

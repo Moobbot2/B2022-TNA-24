@@ -28,9 +28,9 @@ os.makedirs(cell_output_folder, exist_ok=True)
 
 
 # Function to process a single page
-def process_page(page, output_folder, page_number, col_get=3):
+def process_page(page, output_folder, page_number, column_to_extract=3):
     # Preprocess page
-    enhanced_page = preprocess(page, factor=3)
+    enhanced_page = preprocess(page, factor=5)
     img_bin = binarize_image(enhanced_page)
 
     # Detect horizontal lines
@@ -92,7 +92,7 @@ def process_page(page, output_folder, page_number, col_get=3):
             col_counter = 1
         else:
             col_counter += 1
-        if col_counter == col_get and row_counter > 1:
+        if col_counter == column_to_extract and row_counter > 1:
             cell_image = page[top:bottom, left:right]
             cell_filename = f"page_{page_number}_cell_{row_counter}_{col_counter}.jpg"
             cell_filepath = os.path.join(cell_output_folder, cell_filename)
@@ -104,7 +104,7 @@ def process_page(page, output_folder, page_number, col_get=3):
     cv2.imwrite(out_img_link, enhanced_page)
 
     print("Start ocr text")
-    final_horizontal_list = []
+    final_horizontal_list = ""
     for cell in cells_tinhtrang_bn:
         cell_x_min, cell_y_min, cell_x_max, cell_y_max = cell
         cell_image = page[
@@ -116,8 +116,11 @@ def process_page(page, output_folder, page_number, col_get=3):
 
         # Read text from cell using EasyOCR
         horizontal_list = reader.readtext(cell_image_rgb, detail=0)
-        print(horizontal_list)
+        trangthai_bn = " ".join(horizontal_list)
+        final_horizontal_list += trangthai_bn
+        # print(trangthai_bn)
         print("--------------")
+    return final_horizontal_list
 
 
 def main():
@@ -126,13 +129,15 @@ def main():
 
     # Sử dụng pdf2image để chuyển các trang PDF thành hình ảnh
     pages = convert_from_path(pdf_path, poppler_path=r"./poppler-24.02.0/Library/bin")
-    
+
     # Chăm sóc lấy cột 3, điều trị lấy cột 2
-    col_get = 3
+    column_to_extract = 3
+    tinhtrang_bn = []
     # Process each page
     for i, page in enumerate(pages):
-        process_page(np.array(page), output_folder, i + 1, col_get)
+        tinhtrang_bn.append(process_page(np.array(page), output_folder, i + 1, column_to_extract))
     # process_page(np.array(pages[0]), output_folder, 0 + 1)
+    print(tinhtrang_bn)
 
 
 if __name__ == "__main__":

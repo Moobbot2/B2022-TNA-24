@@ -1,6 +1,9 @@
+.conda
+.venv
+__pycache__
+poppler-*
 dataset/data_*/
 *.xlsx
 *.odp
 *.pdf
-output/image_tree
-output/model
+output
