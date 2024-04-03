@@ -11,18 +11,18 @@ from cancer_diagnosis.helpers import get_last_modified_model, get_symptoms
 from config import FEATURES, SAVE_MODEL_PATH, MODEL_USE, POPPLER_PATH
 from ocr_medical_record.ocr_data import process_page
 
-latest_model_path = get_last_modified_model(SAVE_MODEL_PATH, MODEL_USE)
-print(f"Load model: {latest_model_path}")
-
-if latest_model_path:
-    loaded_model = joblib.load(latest_model_path)
-    print("Loaded model from:", latest_model_path)
-    loaded_model.feature_names = FEATURES
-else:
-    print("No model found in the directory.")
-
 
 def main():
+    latest_model_path = get_last_modified_model(SAVE_MODEL_PATH, MODEL_USE)
+    print(f"Load model: {latest_model_path}")
+
+    if latest_model_path:
+        loaded_model = joblib.load(latest_model_path)
+        print("Loaded model from:", latest_model_path)
+        loaded_model.feature_names = FEATURES
+    else:
+        print("No model found in the directory.")
+
     # Đường dẫn đến tài liệu PDF chứa bảng
     pdf_path = "./dataset/cham_soc.pdf"
 

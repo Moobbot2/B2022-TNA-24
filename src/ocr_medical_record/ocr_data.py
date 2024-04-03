@@ -72,7 +72,9 @@ def find_intersection_points(horizontal_lines, vertical_lines):
     return point_data
 
 
-def draw_rectangle_cell(points, enhanced_page):
+def draw_rectangle_and_extract_cell(
+    points, enhanced_page, page, page_number, column_to_extract, save_cell=False
+):
     cell_draw = []
     for point in points:
         left, top = point
@@ -87,7 +89,26 @@ def draw_rectangle_cell(points, enhanced_page):
         if right and bottom:
             cv2.rectangle(enhanced_page, (left, top), (right, bottom), (0, 0, 255), 2)
             cell_draw.append([left, top, right, bottom])
-    return cell_draw
+
+    prev_left = cell_draw[0][0]
+    row_counter = 1
+    col_counter = 0
+    cells_data = []
+    for i, cell in enumerate(cell_draw):
+        left, top, right, bottom = cell
+        if int(left) == int(prev_left) and i != 0:
+            row_counter += 1
+            col_counter = 1
+        else:
+            col_counter += 1
+        if col_counter == column_to_extract and row_counter > 1:
+            cell_image = page[top:bottom, left:right]
+            cell_filename = f"page_{page_number}_cell_{row_counter}_{col_counter}.jpg"
+            cells_data.append(cell)
+            if save_cell == True:
+                cell_filepath = os.path.join(CELL_OUTPUT_FOLDER, cell_filename)
+                cv2.imwrite(cell_filepath, cell_image)
+    return cells_data
 
 
 def cell_crop_data(cells, column_to_extract, page, page_number, save_cell=False):
@@ -145,21 +166,14 @@ def process_page(page, page_number, column_to_extract=3):
     new_horizontal_lines, new_vertical_lines = detect_lines(img_bin)
 
     # Find intersection points and draw rectangles around cells
-    # print("Find intersection points")
     points = find_intersection_points(new_horizontal_lines, new_vertical_lines)
 
-    # print("Draw rectangles around cells")
-
     # Draw rectangles around cells
-    cells = draw_rectangle_cell(points, enhanced_page)
+    cells_data = draw_rectangle_and_extract_cell(
+        points, enhanced_page, page, page_number, column_to_extract
+    )
+    save_output_image(enhanced_page, page_number)
 
-    # print("Crop cells and save")
-    # Crop cells and save
-    cells_data = cell_crop_data(cells, column_to_extract, page, page_number)
-
-    # save_output_image(enhanced_page, page_number)
-
-    # print("Start ocr text")
     # Perform OCR on extracted cells
     extracted_text = ocr_text(cells_data, page)
 
