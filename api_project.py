@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
-import unidecode
+from unidecode import unidecode
 
 from config.config import FEATURES, MODEL_USE, SAVE_MODEL_PATH, TABLE_NAME
 from src.cancer_diagnosis.helpers import get_last_modified_model, get_symptoms
@@ -10,7 +10,7 @@ from src.connect_database.database_utils import (
     connect_to_database,
     insert_data_into_table,
 )
-from src.connect_database.load_data import X, Y
+from src.connect_database import load_data
 
 app = Flask(__name__)
 CORS(app)
@@ -26,9 +26,9 @@ else:
 
 
 def preprocess_feature(feature):
-    feature_without_accents_bytes = unidecode(feature.lower())
-    feature_without_accents = feature_without_accents_bytes.decode("utf-8")
-    return feature_without_accents
+    feature_lower = feature.lower()
+    feature_unidecode = unidecode(feature_lower)
+    return feature_unidecode
 
 
 def process_symptoms(features):
@@ -62,6 +62,7 @@ def api_predict():
             print("trieu_chung:", trieu_chung)
             print("===========================")
             predictions = predict(trieu_chung)
+            
             text_return = (
                 "Không bị ung thư" if predictions[0] == 0 else "Có khả năng bị ung thư"
             )
@@ -75,7 +76,7 @@ def api_predict():
 
 def save_symptoms_to_database(symptoms, table_name):
     try:
-        mydb = connect_to_database()
+        mydb = load_data.mydb
         if mydb:
             insert_data_into_table(mydb, table_name, symptoms)
             return True
@@ -121,13 +122,23 @@ def api_save_data():
 @app.route("/api_update_module", methods=["POST"])
 def api_update_module():
     try:
-        mydb = connect_to_database()
         train_evaluate_visualize_decision_tree(
-            X, Y, classifier_type="DecisionTree"
+            load_data.X, load_data.Y, classifier_type="DecisionTree"
         )
         return jsonify({"message": "Cập nhật model thành công!"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api_medical_record", methods=["POST"])
+def api_medical_record():
+    try:
+        load_data
+        text_return = []
+        return jsonify({"predictions": text_return})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
