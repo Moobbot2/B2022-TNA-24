@@ -2,7 +2,8 @@ import io
 import zipfile
 import os
 import requests
-
+import subprocess
+import sys
 
 def download_file(url, folder, filename):
     """
@@ -20,7 +21,7 @@ def download_file(url, folder, filename):
     # Tạo đường dẫn đầy đủ của tệp
     filepath = os.path.join(folder, filename)
 
-    # Kiểm tra xem tệp đã tồn tại khôngư
+    # Kiểm tra xem tệp đã tồn tại không
     if os.path.exists(filepath):
         print("Tệp đã tồn tại:", filepath)
         return filepath
@@ -32,7 +33,7 @@ def download_file(url, folder, filename):
     try:
         # Tải file từ URL và lưu vào thư mục đích
         response = requests.get(url)
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             f.write(response.content)
         print("File đã được tải xuống và lưu vào:", filepath)
         return filepath
@@ -73,7 +74,7 @@ def download_and_extract_zip(url, extract_path="."):
         if response.status_code == 200:
             # Extract the contents of the ZIP file
             with zipfile.ZipFile(io.BytesIO(response.content), "r") as zip_ref:
-                zip_ref.extractall(extract_path, pwd=filename)
+                zip_ref.extractall(extract_path)
             print(f"{filename} downloaded and extracted successfully.")
             return True
         else:
@@ -83,19 +84,26 @@ def download_and_extract_zip(url, extract_path="."):
         print(f"An error occurred: {e}")
         return False
 
-
 def main():
+    # Sử dụng lệnh pip để cài đặt các gói cần thiết
+    subprocess.run(
+        [
+            "pip", "install", "torch", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu121",
+        ]
+    )
+    subprocess.run(["py", "-m", "pip", "install", "-r", "requirements.txt"])
+
     # Sử dụng hàm để tải tệp từ URL và lưu vào thư mục
-    url = "https://vocr.vn/data/vietocr/vgg_seq2seq.pth"
-    folder = "weights"
-    filename = "vgg_seq2seq.pth"
-    download_file(url, folder, filename)
+    # url = "https://vocr.vn/data/vietocr/vgg_seq2seq.pth"
+    # folder = "models/weights"
+    # filename = "vgg_seq2seq.pth"
+    # download_file(url, folder, filename)
 
     # Example usage:
+    print("Dowload poppler.")
     url_poppler = "https://github.com/oschwartz10612/poppler-windows/releases/download/v24.02.0-0/Release-24.02.0-0.zip"
     download_and_extract_zip(url_poppler)
 
 
 if __name__ == "__main__":
     main()
-# https://github.com/oschwartz10612/poppler-windows/releases/

@@ -1,15 +1,11 @@
 # pip install mysql-connector-python
-from traceback import print_tb
 import mysql.connector
-import sys
-
-sys.path.insert(0, "./src")
-from config import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
+import pandas as pd
+from sqlalchemy import create_engine
 
 
-def connect_to_database(
-    db_username=DB_USERNAME, db_password=DB_PASSWORD, db_host=DB_HOST, db_name=DB_NAME
-):
+def connect_to_database(db_host, db_name, db_username, db_password):
+    print("connect_to_database")
     try:
         # Creating connection object
         mydb = mysql.connector.connect(
@@ -71,27 +67,14 @@ def insert_data_into_table(mydb, table_name, data):
         print("Error while inserting data into MySQL", error)
 
 
-def main():
-    # Example usage:
-    table_name = "trieu_chung_va_chuan_doan"
-    # data_to_insert = [
-    #     (value1, value2, ...),  # Each tuple represents a row of data
-    #     (value1, value2, ...),
-    #     # Add more rows as needed
-    # ]
-
-    mydb = connect_to_database()
-    if mydb:
-        # insert_data_into_table(mydb, table_name, data_to_insert)
-        fetched_data = fetch_data_from_table(mydb, table_name)
-        mydb.close()
-    else:
-        print("Failed to connect to the database.")
-
-    # Printing the fetched data
-    for row in fetched_data:
-        print(row)
-
-
-if __name__ == "__main__":
-    main()
+def write_dataframe_to_database(
+    df, db_host, db_name, db_username, db_password, table_name
+):
+    engine = create_engine(
+        f"mysql+pymysql://{db_username}:{db_password}@{db_host}/{db_name}"
+    )
+    try:
+        df.to_sql(table_name, con=engine, if_exists="append", index=False)
+        print("Data written to the database successfully.")
+    except Exception as e:
+        print("Error occurred while writing data to the database:", e)

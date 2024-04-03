@@ -1,7 +1,24 @@
 import os
+import sys
 
 
-def get_tc(data):
+def add_path_init():
+    print("Add src to path.")
+    current_directory = os.getcwd()
+    directories = ["dataset", "config", "tools", "src"]
+    for directory in directories:
+        sys.path.insert(0, os.path.join(current_directory, directory))
+
+
+def save_model_with_timestamp(save_model_path, classifier_type, timestamp):
+    return os.path.join(save_model_path, f"{classifier_type}_{timestamp}.joblib")
+
+
+def save_tree_with_timestamp(save_tree_path, classifier_type, timestamp):
+    return os.path.join(save_tree_path, f"{classifier_type}_{timestamp}.png")
+
+
+def get_symptoms(data):
     """
     Extracts symptoms and medical conditions from provided data and returns a list indicating their presence.
 
@@ -42,7 +59,11 @@ def get_tc(data):
         for symptom in symptom_group:
             if symptom in data:
                 # Check for negations or variations of the symptom and update presence indicator accordingly
-                if "khong " + symptom not in data and symptom + " (-)" not in data and symptom + " am tinh" not in data:
+                if (
+                    "khong " + symptom not in data
+                    and symptom + " (-)" not in data
+                    and symptom + " am tinh" not in data
+                ):
                     TMP.append(1)
                 else:
                     TMP.append(0)
@@ -57,7 +78,11 @@ def get_tc(data):
     for symptom_ex_group in symptoms_ex:
         for symptom_ex in symptom_ex_group:
             if symptom_ex in data:
-                if "khong " + symptom_ex not in data and symptom_ex + " (-)" not in data and symptom_ex + " am tinh" not in data:
+                if (
+                    "khong " + symptom_ex not in data
+                    and symptom_ex + " (-)" not in data
+                    and symptom_ex + " am tinh" not in data
+                ):
                     # Check for the presence of specific keywords to distinguish medical condition from symptom
                     if not "chan doan" in data and not "chuan doan" in data:
                         TMP.append(1)
@@ -82,8 +107,12 @@ def get_last_modified_model(directory, prefix):
     Returns:
         str or None: The path to the most recently modified model file, or None if no such file exists.
     """
-    models = [file for file in os.listdir(directory) if file.startswith(
-        prefix) and file.endswith('.joblib')]
-    latest_model = max(models, default=None, key=lambda x: os.path.getmtime(
-        os.path.join(directory, x)))
+    models = [
+        file
+        for file in os.listdir(directory)
+        if file.startswith(prefix) and file.endswith(".joblib")
+    ]
+    latest_model = max(
+        models, default=None, key=lambda x: os.path.getmtime(os.path.join(directory, x))
+    )
     return os.path.join(directory, latest_model)

@@ -1,16 +1,32 @@
-pyvi
-xlsxwriter
+
+# General-purpose or utilities:
+numpy
 joblib
 graphviz
-flask
-Flask-Cors
-pandas
-# model
-scikit-learn
-xgboost
-# connect database
+
+# Database-related:
 sqlalchemy
-openpyxl
 pymysql
 mysql-connector-python
+
+# Web framework:
+flask
+Flask-Cors
+
+# Excel and data manipulation:
+openpyxl
+pandas
+xlsxwriter
+
+# Image processing:
+opencv-python
 matplotlib
+
+# Machine learning:
+scikit-learn
+xgboost
+
+# Text processing:
+pyvi
+easyocr
+unidecode
