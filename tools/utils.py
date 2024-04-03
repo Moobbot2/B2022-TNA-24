@@ -1,6 +1,5 @@
 import os
 import sys
-
 import pandas as pd
 
 
@@ -11,9 +10,6 @@ def add_path_init():
     for directory in directories:
         sys.path.insert(0, os.path.join(current_directory, directory))
     print(sys.path)
-
-
-import pandas as pd
 
 
 def create_dataframe_from_table_data(data_table, column_names):

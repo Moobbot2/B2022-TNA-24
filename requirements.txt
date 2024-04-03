@@ -21,6 +21,7 @@ xlsxwriter
 # Image processing:
 opencv-python
 matplotlib
+pdf2image
 
 # Machine learning:
 scikit-learn
