@@ -30,38 +30,37 @@ OUTPUT_FOLDER = "./output/table_ocr"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 # Create output/cell subfolder if it doesn't exist
-# CELL_OUTPUT_FOLDER = os.path.join(OUTPUT_FOLDER, "cell")
-# os.makedirs(CELL_OUTPUT_FOLDER, exist_ok=True)
+CELL_OUTPUT_FOLDER = os.path.join(OUTPUT_FOLDER, "cell")
+os.makedirs(CELL_OUTPUT_FOLDER, exist_ok=True)
 
 
-# Function to process a single page
-def process_page(page, page_number, column_to_extract=3):
-    # logger.info(f"Processing page {page_number}")
-    # Preprocess page
-    enhanced_page = preprocess(page, factor=5)
-    img_bin = binarize_image(enhanced_page)
+def save_output_image(enhanced_page, page_number):
+    out_img_link = os.path.join(OUTPUT_FOLDER, f"page_{page_number}.jpg")
+    cv2.imwrite(out_img_link, enhanced_page)
 
-    # Detect horizontal and vertical lines
+
+def group_lines(lines):
+    grouped_lines = cv2.HoughLinesP(lines, 1, np.pi / 180, 30, maxLineGap=MAX_LINE_GAP)
+    return grouped_lines
+
+
+def detect_lines(img_bin):
     kernel_len = img_bin.shape[1] // KERNEL_DIVISOR
     horizontal_lines = detect_horizontal_lines(img_bin, kernel_len)
     vertical_lines = detect_vertical_lines(img_bin, kernel_len)
-
     # Group lines
-    h_lines = cv2.HoughLinesP(
-        horizontal_lines, 1, np.pi / 180, 30, maxLineGap=MAX_LINE_GAP
-    )
-    v_lines = cv2.HoughLinesP(
-        vertical_lines, 1, np.pi / 180, 30, maxLineGap=MAX_LINE_GAP
-    )
+    h_lines = group_lines(horizontal_lines)
+    v_lines = group_lines(vertical_lines)
     new_horizontal_lines = group_horizontal_lines(h_lines, kernel_len)
     new_vertical_lines = group_vertical_lines(v_lines, kernel_len)
+    return new_horizontal_lines, new_vertical_lines
 
-    # Find intersection points and draw rectangles around cells
-    print("Find intersection points")
-    points = []
-    for hline in new_horizontal_lines:
+
+def find_intersection_points(horizontal_lines, vertical_lines):
+    point_data = []
+    for hline in horizontal_lines:
         x1A, y1A, x2A, y2A = hline
-        for vline in new_vertical_lines:
+        for vline in vertical_lines:
             x1B, y1B, x2B, y2B = vline
 
             line1 = [np.array([x1A, y1A]), np.array([x2A, y2A])]
@@ -69,12 +68,12 @@ def process_page(page, page_number, column_to_extract=3):
 
             x, y = seg_intersect(line1, line2)
             if x1A <= x <= x2A and y1B <= y <= y2B:
-                points.append([int(x), int(y)])
+                point_data.append([int(x), int(y)])
+    return point_data
 
-    print("Draw rectangles around cells")
 
-    # Draw rectangles around cells
-    cells = []
+def draw_rectangle_cell(points, enhanced_page):
+    cell_draw = []
     for point in points:
         left, top = point
         right_points = sorted(
@@ -87,10 +86,11 @@ def process_page(page, page_number, column_to_extract=3):
         right, bottom = get_bottom_right(right_points, bottom_points, points)
         if right and bottom:
             cv2.rectangle(enhanced_page, (left, top), (right, bottom), (0, 0, 255), 2)
-            cells.append([left, top, right, bottom])
+            cell_draw.append([left, top, right, bottom])
+    return cell_draw
 
-    print("Crop cells and save")
-    # Crop cells and save
+
+def cell_crop_data(cells, column_to_extract, page, page_number, save_cell=False):
     prev_left = cells[0][0]
     row_counter = 1
     col_counter = 0
@@ -105,14 +105,21 @@ def process_page(page, page_number, column_to_extract=3):
         if col_counter == column_to_extract and row_counter > 1:
             cell_image = page[top:bottom, left:right]
             cell_filename = f"page_{page_number}_cell_{row_counter}_{col_counter}.jpg"
-            cell_filepath = os.path.join(CELL_OUTPUT_FOLDER, cell_filename)
-            cv2.imwrite(cell_filepath, cell_image)
             cells_data.append(cell)
-    out_img_link = os.path.join(OUTPUT_FOLDER, f"page_{page_number}.jpg")
-    cv2.imwrite(out_img_link, enhanced_page)
+            if save_cell == True:
+                cell_filepath = os.path.join(CELL_OUTPUT_FOLDER, cell_filename)
+                cv2.imwrite(cell_filepath, cell_image)
+    return cells_data
 
-    print("Start ocr text")
-    # Perform OCR on extracted cells
+
+def hotfix_ocr(text_ocr):
+    corrected_text = text_ocr.replace("không", ", không")
+    corrected_text = corrected_text.replace(",,", ",")
+    corrected_text = corrected_text.replace(";", ",")
+    return corrected_text
+
+
+def ocr_text(cells_data, page):
     extracted_text = ""
     for cell in cells_data:
         cell_x_min, cell_y_min, cell_x_max, cell_y_max = cell
@@ -121,9 +128,39 @@ def process_page(page, page_number, column_to_extract=3):
         # Read text from cell using EasyOCR
         horizontal_list = reader.readtext(cell_image_rgb, detail=0)
         text_cell = " ".join(horizontal_list)
-        corrected_text = text_cell.replace("không", ", không")
-        corrected_text = corrected_text.replace(",,", ",")
-        corrected_text = corrected_text.replace(";", ",")
+        corrected_text = hotfix_ocr(text_cell)
         extracted_text = " ".join([extracted_text, corrected_text])
         # logger.info(f"Extracted text from cell: {extracted_text}")
+    return extracted_text
+
+
+# Function to process a single page
+def process_page(page, page_number, column_to_extract=3):
+    logger.info(f"Processing page {page_number}")
+    # Preprocess page
+    enhanced_page = preprocess(page, factor=5)
+    img_bin = binarize_image(enhanced_page)
+
+    # Detect horizontal and vertical lines
+    new_horizontal_lines, new_vertical_lines = detect_lines(img_bin)
+
+    # Find intersection points and draw rectangles around cells
+    # print("Find intersection points")
+    points = find_intersection_points(new_horizontal_lines, new_vertical_lines)
+
+    # print("Draw rectangles around cells")
+
+    # Draw rectangles around cells
+    cells = draw_rectangle_cell(points, enhanced_page)
+
+    # print("Crop cells and save")
+    # Crop cells and save
+    cells_data = cell_crop_data(cells, column_to_extract, page, page_number)
+
+    # save_output_image(enhanced_page, page_number)
+
+    # print("Start ocr text")
+    # Perform OCR on extracted cells
+    extracted_text = ocr_text(cells_data, page)
+
     return extracted_text
