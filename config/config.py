@@ -1,7 +1,7 @@
 # Paths and formats:
 PRIMARY_DATA_LINK = "./dataset/data"
 OUTPUT_LINK = "./dataset/output.xlsx"
-POPPLER_PATH = "./poppler-24.02.0/Library/bin"
+POPPLER_PATH = "./tools/poppler-24.02.0/Library/bin"
 SAVE_MODEL_PATH = './models'
 SAVE_TREE_PATH = './models/image_tree'
 SAVE_LOG_PATH = './log'

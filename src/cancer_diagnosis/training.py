@@ -7,8 +7,11 @@ import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 import xgboost as xgb
 
-from cancer_diagnosis.helpers import save_model_with_timestamp, save_tree_with_timestamp
-from cancer_diagnosis.metrics import evaluate_performance
+from src.cancer_diagnosis.helpers import (
+    save_model_with_timestamp,
+    save_tree_with_timestamp,
+)
+from src.cancer_diagnosis.metrics import evaluate_performance
 from config.config import (
     FEATURES,
     N_ESTIMATORS,
@@ -18,7 +21,7 @@ from config.config import (
     SAVE_TREE_PATH,
     TEST_SIZE,
 )
-from tools.utils.logging import save_log_model
+from tools.logging import save_log_model
 
 
 def visualize_tree(classifier, classifier_type, save_tree_path=None):

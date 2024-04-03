@@ -3,7 +3,6 @@ import zipfile
 import os
 import requests
 import subprocess
-import sys
 
 def download_file(url, folder, filename):
     """
@@ -98,11 +97,11 @@ def main():
     # folder = "models/weights"
     # filename = "vgg_seq2seq.pth"
     # download_file(url, folder, filename)
-
+    tools_support = "./tools"
     # Example usage:
     print("Dowload poppler.")
     url_poppler = "https://github.com/oschwartz10612/poppler-windows/releases/download/v24.02.0-0/Release-24.02.0-0.zip"
-    download_and_extract_zip(url_poppler)
+    download_and_extract_zip(url_poppler, tools_support)
 
 
 if __name__ == "__main__":
