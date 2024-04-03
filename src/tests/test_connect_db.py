@@ -15,13 +15,13 @@ from config import (
 )
 from utils import create_dataframe_from_table_data
 
-from connect_database import program_database
+from src.connect_database import database_utils
 
 
 # Function to test database connection
 def test_database_connection():
     print("Check connect db")
-    mydb = program_database.connect_to_database(
+    mydb = database_utils.connect_to_database(
         db_host=DB_HOST,
         db_name=DB_NAME,
         db_username=DB_USERNAME,
@@ -37,7 +37,7 @@ def test_database_connection():
 # Function to fetch data from the database
 def test_fetch_data():
     mydb = test_database_connection()
-    data_table = program_database.fetch_data_from_table(mydb, TABLE_NAME)
+    data_table = database_utils.fetch_data_from_table(mydb, TABLE_NAME)
     if data_table:
         print("Data fetched successfully.")
         return data_table
@@ -61,7 +61,7 @@ def test_create_dataframe():
 # Function to write DataFrame back to the database
 def test_write_to_database():
     df = test_create_dataframe()
-    program_database.write_dataframe_to_database(
+    database_utils.write_dataframe_to_database(
         df,
         db_host=DB_HOST,
         db_name=DB_NAME,
@@ -75,7 +75,7 @@ def test_write_to_database():
 def test_insert_data():
     mydb = test_database_connection()
     data = [[1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0]]
-    program_database.insert_data_into_table(mydb, TABLE_NAME, data)
+    database_utils.insert_data_into_table(mydb, TABLE_NAME, data)
     print("Data inserted into the database.")
 
 

@@ -1,5 +1,4 @@
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import time
 
 
 def performance_calculation(y_true, y_pred):

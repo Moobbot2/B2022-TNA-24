@@ -6,6 +6,11 @@ SAVE_MODEL_PATH = './models'
 SAVE_TREE_PATH = './models/image_tree'
 SAVE_LOG_PATH = './log'
 
+import os
+os.makedirs(SAVE_MODEL_PATH,exist_ok=True)
+os.makedirs(SAVE_TREE_PATH,exist_ok=True)
+os.makedirs(SAVE_LOG_PATH,exist_ok=True)
+
 # Features and related variables:
 FEATURES_VN = ["đau bụng", "nôn", "chán ăn", "táo bón", "sút cân", "tiêu chảy", "phân có máu", "da niêm mạc vàng", "da sạm", "hoạch ngoại biên", "hạch thượng đòn", "bụng chướng", "phản ứng thành bụng",
                 "cảm ứng phúc mạc",  "dấu hiệu rắn bò", "quai ruột nổi", "sờ thấy khối u", "thăm trực tràng có khối u", "chụp CT ổ bụng có khối u", "nội soi đại tràng có khối u", "tiền sử ung thư"]

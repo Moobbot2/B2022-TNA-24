@@ -1,6 +1,7 @@
 import time
 
-from tools.utils.metrics import log_metrics, performance_calculation
+from tools.metrics import log_metrics, performance_calculation
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 
 def metrics_performance(classifier, X, y_true):
