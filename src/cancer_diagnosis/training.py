@@ -3,13 +3,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 import datetime
 
-import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.tree import DecisionTreeClassifier
 import xgboost as xgb
 
 from src.cancer_diagnosis.helpers import (
     save_model_with_timestamp,
     save_tree_with_timestamp,
+    visualize_tree,
 )
 from src.cancer_diagnosis.metrics import evaluate_performance
 from config.config import (
@@ -22,15 +22,6 @@ from config.config import (
     TEST_SIZE,
 )
 from tools.logging import save_log_model
-
-
-def visualize_tree(classifier, classifier_type, save_tree_path=None):
-    if classifier_type == "DecisionTree" and save_tree_path:
-        plt.figure(figsize=(120, 80))
-        plot_tree(
-            classifier, feature_names=FEATURES, class_names=["1", "0"], filled=True
-        )
-        plt.savefig(save_tree_path)
 
 
 def train_evaluate_visualize_decision_tree(
@@ -75,4 +66,4 @@ def train_evaluate_visualize_decision_tree(
     print(log_file_path)
     evaluate_performance(classifier, X_train, y_train, X_test, y_test, log_file_path)
     joblib.dump(classifier, save_model_path)
-    visualize_tree(classifier, classifier_type, save_tree_path)
+    visualize_tree(classifier, classifier_type, FEATURES, save_tree_path)

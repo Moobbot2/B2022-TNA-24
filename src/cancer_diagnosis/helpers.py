@@ -1,6 +1,9 @@
 import os
 import sys
 
+from matplotlib import pyplot as plt
+from sklearn.tree import plot_tree
+
 
 def add_path_init():
     print("Add src to path.")
@@ -16,6 +19,15 @@ def save_model_with_timestamp(save_model_path, classifier_type, timestamp):
 
 def save_tree_with_timestamp(save_tree_path, classifier_type, timestamp):
     return os.path.join(save_tree_path, f"{classifier_type}_{timestamp}.png")
+
+
+def visualize_tree(classifier, classifier_type, feature_names, save_tree_path=None):
+    if classifier_type == "DecisionTree" and save_tree_path:
+        plt.figure(figsize=(120, 80))
+        plot_tree(
+            classifier, feature_names=feature_names, class_names=["1", "0"], filled=True
+        )
+        plt.savefig(save_tree_path)
 
 
 def get_symptoms(data):
