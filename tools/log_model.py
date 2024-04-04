@@ -1,14 +1,7 @@
 import os
 
 
-def save_log_model(
-    log_directory,
-    timestamp,
-    model_type,
-    train_samples,
-    test_samples,
-    hyperparameters,
-):
+def save_log_model(log_directory, timestamp, model_type, train_samples, test_samples, hyperparameters):
     log_file_name = f"log_{model_type}_{timestamp}.txt"
     log_file_path = os.path.join(log_directory, log_file_name)
     with open(log_file_path, "a") as f:

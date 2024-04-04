@@ -29,8 +29,8 @@ except:
 
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
 # Initialize EasyOCR reader
 reader = easyocr.Reader(["vi"])
@@ -170,7 +170,8 @@ def ocr_text(cells_data, page):
 
 # Function to process a single page
 def process_page(page, page_number, column_to_extract=3):
-    logger.info(f"Processing page {page_number}")
+    # logger.info(f"Processing page {page_number}")
+    print(f"Processing page {page_number}")
     # Preprocess page
     enhanced_page = preprocess(page, factor=5)
     img_bin = binarize_image(enhanced_page)

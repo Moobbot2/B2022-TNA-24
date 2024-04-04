@@ -6,22 +6,17 @@ import datetime
 from sklearn.tree import DecisionTreeClassifier
 import xgboost as xgb
 
-from src.cancer_diagnosis.helpers import (
-    save_model_with_timestamp,
-    save_tree_with_timestamp,
-    visualize_tree,
-)
-from src.cancer_diagnosis.metrics import evaluate_performance
-from config.config import (
-    FEATURES,
-    N_ESTIMATORS,
-    RAMDOM_STATE,
-    SAVE_LOG_PATH,
-    SAVE_MODEL_PATH,
-    SAVE_TREE_PATH,
-    TEST_SIZE,
-)
-from tools.log_model import save_log_model
+try:
+    from src.cancer_diagnosis.helpers import (save_model_with_timestamp, save_tree_with_timestamp, visualize_tree)
+    from src.cancer_diagnosis.metrics import evaluate_performance
+    from config.config import (FEATURES, N_ESTIMATORS, RAMDOM_STATE, SAVE_LOG_PATH, SAVE_MODEL_PATH, SAVE_TREE_PATH, TEST_SIZE)
+    from tools.log_model import save_log_model
+except:
+    from cancer_diagnosis.helpers import ( save_model_with_timestamp, save_tree_with_timestamp, visualize_tree,
+    )
+    from cancer_diagnosis.metrics import evaluate_performance
+    from config import (FEATURES, N_ESTIMATORS, RAMDOM_STATE, SAVE_LOG_PATH, SAVE_MODEL_PATH, SAVE_TREE_PATH, TEST_SIZE)
+    from log_model import save_log_model
 
 
 def train_evaluate_visualize_decision_tree(
@@ -64,6 +59,8 @@ def train_evaluate_visualize_decision_tree(
         classifier.get_params(),
     )
     print(log_file_path)
-    evaluate_performance(classifier, X_train, y_train, X_test, y_test, log_file_path)
+    evaluate_model = evaluate_performance(classifier, X_train, y_train,
+                         X_test, y_test, log_file_path)
     joblib.dump(classifier, save_model_path)
     visualize_tree(classifier, classifier_type, FEATURES, save_tree_path)
+    return evaluate_model

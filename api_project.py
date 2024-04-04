@@ -1,17 +1,27 @@
+from io import BytesIO
 import sys
 from flask import Flask, request, jsonify
 import flask
 from flask_cors import CORS
 import joblib
 import numpy as np
+import pandas as pd
 from pdf2image import convert_from_bytes
 from unidecode import unidecode
 
-from config.config import FEATURES, FEATURES_VN, MODEL_USE, POPPLER_PATH, SAVE_MODEL_PATH, TABLE_NAME
+from config.config import (
+    FEATURES,
+    FEATURES_VN,
+    KQ,
+    MODEL_USE,
+    POPPLER_PATH,
+    SAVE_MODEL_PATH,
+    TABLE_NAME,
+)
 from src.cancer_diagnosis.helpers import get_last_modified_model, get_symptoms
+from src.cancer_diagnosis.metrics import metrics_performance
 from src.cancer_diagnosis.training import train_evaluate_visualize_decision_tree
-from src.connect_database.database_utils import insert_data_into_table
-from src.connect_database import load_data
+from src.connect_database import database_utils, load_data
 from src.ocr_medical_record.ocr_data import process_page
 
 app = Flask(__name__)
@@ -36,7 +46,8 @@ def preprocess_feature(feature):
 
 
 def process_symptoms(features):
-    preprocessed_symptoms = [preprocess_feature(feature) for feature in features]
+    preprocessed_symptoms = [preprocess_feature(
+        feature) for feature in features]
     symptoms = get_symptoms(preprocessed_symptoms)
     return symptoms
 
@@ -82,7 +93,7 @@ def save_symptoms_to_database(symptoms, table_name):
     try:
         mydb = load_data.mydb
         if mydb:
-            insert_data_into_table(mydb, table_name, symptoms)
+            database_utils.insert_data_into_table(mydb, table_name, symptoms)
             return True
         return False
     except Exception as e:
@@ -173,6 +184,65 @@ def api_medical_record():
                 if symptom_status == 1:
                     text_symptoms.append(FEATURES_VN[index])
             return jsonify({"symptoms": text_symptoms})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/metrics_model", methods=["POST"])
+def metrics_model():
+    try:
+        if flask.request.method == "POST":
+            if "file_xlsx" in request.files:
+                file_xlsx = flask.request.files["file_xlsx"].read()
+                df = pd.read_excel(BytesIO(file_xlsx))
+            elif "file_csv" in request.files:
+                file_csv = flask.request.files["file_csv"].read()
+                df = pd.read_csv(BytesIO(file_csv))
+            else:
+                return jsonify({"error": "No file part"}), 400
+
+            for col in df.columns:
+                new_col = unidecode(col).replace(" ", "_")
+                df.rename(columns={col: new_col}, inplace=True)
+            required_columns = set(FEATURES + [KQ])
+            if not required_columns.issubset(set(df.columns)):
+                missing_columns = list(required_columns - set(df.columns))
+                return jsonify({"error": f"Missing required columns: {missing_columns}"}), 400
+
+            x_check = df[FEATURES]
+            y_check = df[KQ]
+            metrics_return = train_evaluate_visualize_decision_tree(
+                x_check, y_check, classifier_type="DecisionTree")
+            return jsonify({"metrics": metrics_return})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/evaluation_model", methods=["POST"])
+def evaluation_model():
+    try:
+        if flask.request.method == "POST":
+            if "file_xlsx" in request.files:
+                file_xlsx = flask.request.files["file_xlsx"].read()
+                df = pd.read_excel(BytesIO(file_xlsx))
+            elif "file_csv" in request.files:
+                file_csv = flask.request.files["file_csv"].read()
+                df = pd.read_csv(BytesIO(file_csv))
+            else:
+                return jsonify({"error": "No file part"}), 400
+
+            for col in df.columns:
+                new_col = unidecode(col).replace(" ", "_")
+                df.rename(columns={col: new_col}, inplace=True)
+            required_columns = set(FEATURES + [KQ])
+            if not required_columns.issubset(set(df.columns)):
+                missing_columns = list(required_columns - set(df.columns))
+                return jsonify({"error": f"Missing required columns: {missing_columns}"}), 400
+
+            x_check = df[FEATURES]
+            y_check = df[KQ]
+            metrics_return = metrics_performance(loaded_model, x_check, y_check)
+            return jsonify({"metrics_return": metrics_return})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

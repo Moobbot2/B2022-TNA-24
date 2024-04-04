@@ -46,10 +46,6 @@ To use the MySQL database, follow these steps:
 py api_project
 ```
 
-- **Step 2: Accessing the Web Demo** Open the provided web interface for interacting with the decision tree model:
-
-```bash
-start chrome file:///%CD%/examples/web/index.html
-```
+- **Step 2: Accessing the Web Demo** The web demo by opening the [Web demo](.\examples\web\index.html) file in a web browser.
 
 ## Directory Structure

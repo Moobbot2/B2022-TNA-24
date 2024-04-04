@@ -1,6 +1,9 @@
 import time
+try:
+    from tools.metrics import log_metrics, performance_calculation
+except:
+    from metrics import log_metrics, performance_calculation
 
-from tools.metrics import log_metrics, performance_calculation
 
 def metrics_performance(classifier, X, y_true):
     start_time = time.time()
@@ -15,3 +18,4 @@ def evaluate_performance(classifier, X_train, y_train, X_test, y_test, log_file_
     train_metrics = metrics_performance(classifier, X_train, y_train)
     test_metrics = metrics_performance(classifier, X_test, y_test)
     log_metrics(train_metrics, test_metrics, log_file_path)
+    return {"train_metrics": train_metrics, "test_metrics": test_metrics}
