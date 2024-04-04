@@ -21,7 +21,7 @@ from config.config import (
     SAVE_TREE_PATH,
     TEST_SIZE,
 )
-from tools.logging import save_log_model
+from tools.log_model import save_log_model
 
 
 def train_evaluate_visualize_decision_tree(
