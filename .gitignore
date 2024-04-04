@@ -7,3 +7,5 @@ dataset/data_*/
 *.odp
 *.pdf
 output
+log/*
+models
