@@ -1,19 +1,23 @@
+import sys
 from flask import Flask, request, jsonify
+import flask
 from flask_cors import CORS
 import joblib
+import numpy as np
+from pdf2image import convert_from_bytes
 from unidecode import unidecode
 
-from config.config import FEATURES, MODEL_USE, SAVE_MODEL_PATH, TABLE_NAME
+from config.config import FEATURES, FEATURES_VN, MODEL_USE, POPPLER_PATH, SAVE_MODEL_PATH, TABLE_NAME
 from src.cancer_diagnosis.helpers import get_last_modified_model, get_symptoms
 from src.cancer_diagnosis.training import train_evaluate_visualize_decision_tree
-from src.connect_database.database_utils import (
-    connect_to_database,
-    insert_data_into_table,
-)
+from src.connect_database.database_utils import insert_data_into_table
 from src.connect_database import load_data
+from src.ocr_medical_record.ocr_data import process_page
 
 app = Flask(__name__)
 CORS(app)
+
+sys.setrecursionlimit(40000)
 
 latest_model_path = get_last_modified_model(SAVE_MODEL_PATH, MODEL_USE)
 
@@ -62,7 +66,7 @@ def api_predict():
             print("trieu_chung:", trieu_chung)
             print("===========================")
             predictions = predict(trieu_chung)
-            
+
             text_return = (
                 "Không bị ung thư" if predictions[0] == 0 else "Có khả năng bị ung thư"
             )
@@ -130,12 +134,45 @@ def api_update_module():
         return jsonify({"error": str(e)}), 500
 
 
+def ocr_symptoms(pdf_byte, column_to_extract=3):
+
+    pages = convert_from_bytes(pdf_byte, poppler_path=POPPLER_PATH)
+    extracted_data = []
+    text_status = ""
+    # Process each page
+    for i, page in enumerate(pages):
+        text_extract = process_page(np.array(page), i + 1, column_to_extract)
+        extracted_data.append(text_extract)
+        text_status += text_extract
+
+    text_status = text_status.lower()
+    text_status = unidecode(text_status)
+    symptoms = get_symptoms(text_status)
+    return symptoms
+
+
 @app.route("/api_medical_record", methods=["POST"])
 def api_medical_record():
     try:
-        load_data
-        text_return = []
-        return jsonify({"predictions": text_return})
+        if flask.request.method == "POST":
+            if "file_pdf" not in request.files:
+                return jsonify({"error": "No PDF file uploaded"}), 400
+
+            pdf_file = flask.request.files["file_pdf"].read()
+            file_name = flask.request.form.get("file_name")
+
+            column_to_extract = 3  # Mặc định là 3 (File chăm sóc)
+            if file_name == "cham_soc":
+                column_to_extract = 3
+            if file_name == "dieu_tri":
+                column_to_extract = 2
+            symptoms = ocr_symptoms(pdf_file, column_to_extract)
+            text_symptoms = []
+
+            for index, symptom_status in enumerate(symptoms):
+                if symptom_status == 1:
+                    text_symptoms.append(FEATURES_VN[index])
+            return jsonify({"symptoms": text_symptoms})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

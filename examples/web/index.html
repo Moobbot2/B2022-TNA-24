@@ -237,9 +237,22 @@
                         </div>
                     </div>
                     <div class="card-footer text-center">
-                        <div class="input-group mb-2">
-                            <input type="file" class="form-control js-file" id="file-upload" placeholder="Hồ sơ bệnh án"
-                                accept=".jpg, .png, .pdf" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="file-chamsoc" class="form-label h3">Phiếu chăm sóc/Kế hoạch chăm
+                                        sóc</label>
+                                    <input type="file" class="form-control js-file" id="file-chamsoc" name="cham_soc"
+                                        accept=".pdf">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="file-dieutri" class="form-label h3">Tờ điều trị</label>
+                                    <input type="file" class="form-control js-file" id="file-dieutri" name="dieu_tri"
+                                        accept=".pdf">
+                                </div>
+                            </div>
                         </div>
                         <div class="js-wrap">
                             <input type="hidden" name="ket_qua" value="0">
@@ -382,6 +395,61 @@
             console.log('User canceled the operation.');
         }
     });
+
+    // Mã JavaScript để bật các ô checkbox dựa trên danh sách triệu chứng (symptoms)
+    function activateCheckboxes(symptoms) {
+        symptoms.forEach(function (symptom) {
+            // Lấy tất cả các ô checkbox có giá trị giống với symptom và thuộc tính name là "symptom"
+            var checkboxes = document.querySelectorAll('input[value="' + symptom + '"][name="symptom"]');
+
+            // Đặt trạng thái checked cho tất cả các ô checkbox
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+        });
+    }
+
+    $(".js-file").change(function () {
+        // Xóa nội dung của tất cả các input có class js-file khác
+        $('.js-file').not(this).val('');
+
+        // Đặt tất cả các ô checkbox về trạng thái không chọn (unchecked)
+        $('input[type="checkbox"]').prop('checked', false);
+
+        var file = $(this).prop('files')[0];
+        console.log($(this).prop('name'));
+        var name_file = $(this).prop('name');
+        var formData = new FormData();
+        formData.append('file_pdf', file);
+        formData.append('file_name', name_file);
+        // Hiển thị thông báo đang xử lý
+        $(".js_check_crc").text("Đang xử lý file vui lòng chờ trong giây lát...");
+        $(".js-update-data").remove();
+
+        $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:5000/api_medical_record",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                console.log("symptoms: ", response.symptoms);
+                activateCheckboxes(response.symptoms);
+                // Hiển thị thông báo thành công
+                $(".js_check_crc").text("Trích xuất thành công!");
+                console.log("Trích xuất thành công!");
+                setTimeout(function () {
+                    $(".js_check_crc").text("");
+                }, 200);
+            },
+            error: function (xhr, error) {
+                console.log("Error:", xhr);
+            },
+        });
+    })
+
 
 </script>
 

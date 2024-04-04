@@ -1,18 +1,31 @@
 import numpy as np
 import cv2
 import os
-from ocr_medical_record.helpers import (
-    preprocess,
-    binarize_image,
-    detect_horizontal_lines,
-    group_horizontal_lines,
-    detect_vertical_lines,
-    group_vertical_lines,
-    seg_intersect,
-    get_bottom_right,
-)
 import easyocr
 import logging
+
+try:
+    from src.ocr_medical_record.helpers import (
+        preprocess,
+        binarize_image,
+        detect_horizontal_lines,
+        group_horizontal_lines,
+        detect_vertical_lines,
+        group_vertical_lines,
+        seg_intersect,
+        get_bottom_right,
+    )
+except:
+    from src.ocr_medical_record.helpers import (
+        preprocess,
+        binarize_image,
+        detect_horizontal_lines,
+        group_horizontal_lines,
+        detect_vertical_lines,
+        group_vertical_lines,
+        seg_intersect,
+        get_bottom_right,
+    )
 
 
 # Configure logging
@@ -149,10 +162,10 @@ def ocr_text(cells_data, page):
         # Read text from cell using EasyOCR
         horizontal_list = reader.readtext(cell_image_rgb, detail=0)
         text_cell = " ".join(horizontal_list)
-        corrected_text = hotfix_ocr(text_cell)
-        extracted_text = " ".join([extracted_text, corrected_text])
-        # logger.info(f"Extracted text from cell: {extracted_text}")
-    return extracted_text
+        extracted_text = " ".join([extracted_text, text_cell])
+    corrected_text = hotfix_ocr(extracted_text)
+    # logger.info(f"Extracted text from cell: {corrected_text}")
+    return corrected_text
 
 
 # Function to process a single page
