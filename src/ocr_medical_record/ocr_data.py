@@ -16,7 +16,7 @@ try:
         get_bottom_right,
     )
 except:
-    from src.ocr_medical_record.helpers import (
+    from ocr_medical_record.helpers import (
         preprocess,
         binarize_image,
         detect_horizontal_lines,
