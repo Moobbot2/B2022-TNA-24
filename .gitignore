@@ -1,9 +1,5 @@
 .conda
 .venv
+.git
 __pycache__
 poppler-*
-dataset/*.pdf
-dataset/*.odp
-output
-log/*
-models
