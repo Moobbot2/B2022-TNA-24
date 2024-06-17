@@ -122,9 +122,12 @@ def main():
                 "torchaudio",
             ]
         )
+    from config.config import BASE_PATH
 
     # Cài đặt các gói từ requirements.txt
-    subprocess.run(["python", "-m", "pip", "install", "-r", "requirements.txt"])
+    subprocess.run(
+        ["python", "-m", "pip", "install", "-r", BASE_PATH + "/requirements.txt"]
+    )
 
     # Tải và giải nén Poppler
     tools_support = "./tools"
