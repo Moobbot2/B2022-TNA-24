@@ -10,23 +10,6 @@ except ModuleNotFoundError as e:
     import requests
 
 
-def check_gpu():
-    """
-    Kiểm tra xem máy có GPU hay không.
-    Returns:
-    bool: True nếu máy có GPU, False nếu không.
-    """
-    try:
-        import torch
-
-        return torch.cuda.is_available()
-    except ImportError:
-        subprocess.run(["pip", "install", "torch"])
-        import torch
-
-        return torch.cuda.is_available()
-
-
 def download_file(url, folder, filename):
     """
     Tải một tệp từ URL và lưu vào thư mục đã chỉ định.
@@ -96,32 +79,6 @@ def download_and_extract_zip(url, extract_path="."):
 
 
 def main():
-    # Kiểm tra xem máy có GPU hay không
-    has_gpu = check_gpu()
-
-    # Cài đặt các gói cần thiết
-    if has_gpu:
-        subprocess.run(
-            [
-                "pip",
-                "install",
-                "torch",
-                "torchvision",
-                "torchaudio",
-                "--index-url",
-                "https://download.pytorch.org/whl/cu121",
-            ]
-        )
-    else:
-        subprocess.run(
-            [
-                "pip",
-                "install",
-                "torch",
-                "torchvision",
-                "torchaudio",
-            ]
-        )
     from config.config import BASE_PATH
 
     # Cài đặt các gói từ requirements.txt
