@@ -1,3 +1,17 @@
+# Database
+DB_USERNAME = "root"
+DB_PASSWORD = ""
+DB_HOST = "localhost"
+DB_NAME = "ungthu"
+TABLE_NAME = "trieu_chung_va_chuan_doan"
+
+# Model settings
+TEST_SIZE = 0.2
+RAMDOM_STATE = 42
+N_ESTIMATORS = 100
+MODEL_USE = "DecisionTree"  # Model to use ('DecisionTree', 'RandomForest', 'XGBoost').
+
+
 import os
 
 __dir__ = os.path.dirname(__file__)
@@ -63,16 +77,3 @@ FEATURES = [
     "tien_su_ung_thu",
 ]
 KQ = "ket_qua"
-
-# Database
-DB_USERNAME = "root"
-DB_PASSWORD = ""
-DB_HOST = "localhost"
-DB_NAME = "ungthu"
-TABLE_NAME = "trieu_chung_va_chuan_doan"
-
-# Model settings
-TEST_SIZE = 0.2
-RAMDOM_STATE = 42
-N_ESTIMATORS = 100
-MODEL_USE = "DecisionTree"  # Model to use ('DecisionTree', 'RandomForest', 'XGBoost').
