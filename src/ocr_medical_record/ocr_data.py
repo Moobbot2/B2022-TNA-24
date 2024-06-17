@@ -1,32 +1,25 @@
+import os
+import sys
+
+__dir__ = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(__dir__, "../../"))
+sys.path.append(project_root)
+
 import numpy as np
 import cv2
 import os
 import easyocr
 import logging
-
-try:
-    from src.ocr_medical_record.helpers import (
-        preprocess,
-        binarize_image,
-        detect_horizontal_lines,
-        group_horizontal_lines,
-        detect_vertical_lines,
-        group_vertical_lines,
-        seg_intersect,
-        get_bottom_right,
-    )
-except:
-    from src.ocr_medical_record.helpers import (
-        preprocess,
-        binarize_image,
-        detect_horizontal_lines,
-        group_horizontal_lines,
-        detect_vertical_lines,
-        group_vertical_lines,
-        seg_intersect,
-        get_bottom_right,
-    )
-
+from src.ocr_medical_record.helpers import (
+    preprocess,
+    binarize_image,
+    detect_horizontal_lines,
+    group_horizontal_lines,
+    detect_vertical_lines,
+    group_vertical_lines,
+    seg_intersect,
+    get_bottom_right,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

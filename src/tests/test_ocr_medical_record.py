@@ -3,14 +3,16 @@ import numpy as np
 from pdf2image import convert_from_path
 from unidecode import unidecode
 
-from helpers import add_path_init  # Helper function to add custom module paths
+import os
+import sys
 
-# Adding custom module paths to sys.path
-add_path_init()
-from cancer_diagnosis.helpers import get_last_modified_model, get_symptoms
-from config import FEATURES, SAVE_MODEL_PATH, MODEL_USE, POPPLER_PATH
-from ocr_medical_record.ocr_data import process_page
+__dir__ = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(__dir__, "../../"))
+sys.path.append(project_root)
 
+from config.config import FEATURES, SAVE_MODEL_PATH, MODEL_USE, POPPLER_PATH
+from src.cancer_diagnosis.helpers import get_last_modified_model, get_symptoms
+from src.ocr_medical_record.ocr_data import process_page
 
 def main():
     latest_model_path = get_last_modified_model(SAVE_MODEL_PATH, MODEL_USE)

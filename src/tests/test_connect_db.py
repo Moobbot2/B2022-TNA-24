@@ -1,10 +1,12 @@
-# Importing necessary functions and modules
-from helpers import add_path_init  # Helper function to add custom module paths
+import os
+import sys
 
-# Adding custom module paths to sys.path
-add_path_init()
+__dir__ = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(__dir__, "../../"))
+sys.path.append(project_root)
 
-from config import (
+
+from config.config import (
     FEATURES,
     KQ,
     DB_HOST,
@@ -13,10 +15,9 @@ from config import (
     DB_USERNAME,
     TABLE_NAME,
 )
-from utils import create_dataframe_from_table_data
+from tools.utils import create_dataframe_from_table_data
 
 from src.connect_database import database_utils
-
 
 # Function to test database connection
 def test_database_connection():

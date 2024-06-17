@@ -7,8 +7,8 @@ def main():
         print("===== $$$ =====")
         print("\nChoose an option:")
         print("1. Train DecisionTree")
-        print("2. Train DecisionTree")
-        print("3. Train DecisionTree")
+        print("2. Train RandomForest")
+        print("3. Train XGBoost")
         print("4. Exit")
 
         choice = input("Enter your choice: ")

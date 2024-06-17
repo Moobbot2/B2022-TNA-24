@@ -1,3 +1,10 @@
+import os
+import sys
+
+__dir__ = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(__dir__, "../../"))
+sys.path.append(project_root)
+
 from config.config import (
     DB_HOST,
     DB_NAME,

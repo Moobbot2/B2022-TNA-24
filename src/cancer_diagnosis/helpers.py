@@ -1,16 +1,7 @@
 import os
-import sys
 
 from matplotlib import pyplot as plt
 from sklearn.tree import plot_tree
-
-
-def add_path_init():
-    print("Add src to path.")
-    current_directory = os.getcwd()
-    directories = ["dataset", "config", "tools", "src"]
-    for directory in directories:
-        sys.path.insert(0, os.path.join(current_directory, directory))
 
 
 def save_model_with_timestamp(save_model_path, classifier_type, timestamp):

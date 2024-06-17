@@ -1,3 +1,11 @@
+import os
+import sys
+
+__dir__ = os.path.dirname(__file__)
+project_root = os.path.abspath(os.path.join(__dir__, "../../"))
+sys.path.append(project_root)
+
+
 # pip install unidecode, pyviF
 
 from unidecode import unidecode
@@ -25,11 +33,6 @@ def main():
 
 
 if __name__ == "__main__":
-    from helpers import add_path_init
-
-    add_path_init()
-    from cancer_diagnosis.helpers import get_symptoms
-    main()
-
-else:
     from src.cancer_diagnosis.helpers import get_symptoms
+
+    main()

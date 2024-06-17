@@ -1,8 +1,14 @@
 import io
 import zipfile
 import os
-import requests
 import subprocess
+
+try:
+    import requests
+except ModuleNotFoundError as e:
+    subprocess.run(["pip", "install", "requests"])
+    import requests
+
 
 def download_file(url, folder, filename):
     """
@@ -83,14 +89,21 @@ def download_and_extract_zip(url, extract_path="."):
         print(f"An error occurred: {e}")
         return False
 
+
 def main():
     # Sử dụng lệnh pip để cài đặt các gói cần thiết
     subprocess.run(
         [
-            "pip", "install", "torch", "torchvision", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu121",
+            "pip",
+            "install",
+            "torch",
+            "torchvision",
+            "torchaudio",
+            "--index-url",
+            "https://download.pytorch.org/whl/cu121",
         ]
     )
-    subprocess.run(["py", "-m", "pip", "install", "-r", "requirements.txt"])
+    subprocess.run(["python", "-m", "pip", "install", "-r", "requirements.txt"])
 
     # Sử dụng hàm để tải tệp từ URL và lưu vào thư mục
     # url = "https://vocr.vn/data/vietocr/vgg_seq2seq.pth"
