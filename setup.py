@@ -83,7 +83,7 @@ def main():
 
     # Cài đặt các gói từ requirements.txt
     subprocess.run(
-        ["python", "-m", "pip", "install", "-r", BASE_PATH + "/requirements.txt"]
+        ["python3", "-m", "pip", "install", "-r", BASE_PATH + "/requirements.txt"]
     )
 
     # Tải và giải nén Poppler
