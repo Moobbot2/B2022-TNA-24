@@ -1,4 +1,19 @@
 import pandas as pd
+import socket
+
+
+def get_local_ip():
+    """Get the local IP address of the machine."""
+    try:
+        # Connect to an external host to get the local IP address
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0)
+        s.connect(("8.8.8.8", 1))  # Example using Google DNS
+        IP_CONNECT = s.getsockname()[0]
+        s.close()
+    except Exception:
+        IP_CONNECT = "127.0.0.1"
+    return IP_CONNECT
 
 
 def create_dataframe_from_table_data(data_table, column_names):

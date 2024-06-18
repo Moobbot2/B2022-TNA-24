@@ -5,6 +5,7 @@ from flask_cors import CORS
 import joblib
 import numpy as np
 from pdf2image import convert_from_bytes
+from tools.utils import get_local_ip
 from unidecode import unidecode
 
 from config.config import FEATURES, FEATURES_VN, MODEL_USE, POPPLER_PATH, SAVE_MODEL_PATH, TABLE_NAME
@@ -178,4 +179,6 @@ def api_medical_record():
 
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    HOST_CONNECT = get_local_ip()
+    PORT_CONNECT = 5000
+    app.run(host= HOST_CONNECT, port=PORT_CONNECT, debug=True)
