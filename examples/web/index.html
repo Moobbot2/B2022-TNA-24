@@ -276,11 +276,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     var btn_udpate_data = '<button type="button" class="btn btn-warning js-update-data">Trường hợp đặc trưng</button>';
-
+    var link_connect = "http://127.0.0.1:5000"
     function predict(data) {
         $.ajax({
             type: "POST",
-            url: "http://127.0.0.1:5000/api_predict",
+            url: link_connect + "/api_predict",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (response) {
@@ -301,7 +301,7 @@
             // If the user confirms, make the AJAX call
             $.ajax({
                 type: "POST",
-                url: "http://127.0.0.1:5000/api_save_data",
+                url: link_connect + "/api_save_data",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
                 success: function (response) {
@@ -378,7 +378,7 @@
             // If the user confirms, make the AJAX call
             $.ajax({
                 type: "POST",
-                url: "http://127.0.0.1:5000/api_update_module",
+                url: link_connect + "/api_update_module",
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
                     // Display the predicted result
@@ -430,7 +430,7 @@
 
         $.ajax({
             type: "POST",
-            url: "http://127.0.0.1:5000/api_medical_record",
+            url: link_connect + "/api_medical_record",
             data: formData,
             contentType: false,
             processData: false,
