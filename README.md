@@ -196,7 +196,7 @@ var link_connect = "http://server_domain_or_IP:5000"
 **3. Move HTML file to the web directory:**
 
 ```sh
-sudo mkdir -p /var/www/ungthu
+sudo mkdir -p /var/www/html/ungthu
 sudo cp ~/DoAn/examples/web/index.html /var/www/html/ungthu/index.html
 ```
 
