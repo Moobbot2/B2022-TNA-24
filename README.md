@@ -157,7 +157,7 @@ EXIT;
 **5. Update config.py with the MySQL connection information:**
 
 ```sh
-nano ~/B2022-TNA-24/config.py
+nano ~/config/config.py
 ```
 
 **6. Start the API:**
