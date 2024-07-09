@@ -125,13 +125,13 @@ EXIT;
 
 ```sh
 sudo apt-get install git
-git clone https://github.com/Moobbot2/DoAn.git
+git clone https://github.com/Moobbot2/B2022-TNA-24.git
 ```
 
 **2. Create a virtual environment:**
 
 ```sh
-cd ~/DoAn
+cd ~/B2022-TNA-24
 python3 -m venv .venv
 source .venv/bin/activate
 ```
@@ -157,7 +157,7 @@ EXIT;
 **5. Update config.py with the MySQL connection information:**
 
 ```sh
-nano ~/DoAn/config.py
+nano ~/B2022-TNA-24/config.py
 ```
 
 **6. Start the API:**
@@ -178,7 +178,7 @@ sudo apt install nginx
 **2. Update the web interface connection link:**
 
 ```sh
-sudo nano ~/DoAn/examples/web/index.html
+sudo nano ~/B2022-TNA-24/examples/web/index.html
 ```
 
 Change the line:
@@ -197,7 +197,7 @@ var link_connect = "http://server_domain_or_IP:5000"
 
 ```sh
 sudo mkdir -p /var/www/html/ungthu
-sudo cp ~/DoAn/examples/web/index.html /var/www/html/ungthu/index.html
+sudo cp ~/B2022-TNA-24/examples/web/index.html /var/www/html/ungthu/index.html
 ```
 
 **4. Configure Nginx:**
@@ -235,7 +235,7 @@ sudo ufw allow 'Nginx Full'
 Here is an overview of the project's directory structure:
 
 ```
-DoAn/
+B2022-TNA-24/
 ├── config/
 │   └── config.py
 ├── dataset/
