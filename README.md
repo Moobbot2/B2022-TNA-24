@@ -197,7 +197,7 @@ var link_connect = "http://server_domain_or_IP:5000"
 
 ```sh
 sudo mkdir -p /var/www/html/ungthu
-sudo cp ~/B2022-TNA-24/examples/web/index.html /var/www/html/ungthu/index.html
+sudo cp ~/B2022-TNA-24/examples/web/* /var/www/html/ungthu/
 ```
 
 **4. Configure Nginx:**
