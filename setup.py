@@ -81,10 +81,15 @@ def download_and_extract_zip(url, extract_path="."):
 def main():
     from config.config import BASE_PATH
 
-    # Cài đặt các gói từ requirements.txt
-    subprocess.run(
-        ["python3", "-m", "pip", "install", "-r", BASE_PATH + "/requirements.txt"]
-    )
+    # # Xác định lệnh dựa trên hệ điều hành
+    # command = (
+    #     ["pip", "install", "-r", f"{BASE_PATH}/requirements.txt"]
+    #     if os.name == "nt"  # Windows
+    #     else ["python3", "-m", "pip", "install", "-r", f"{BASE_PATH}/requirements.txt"]
+    # )
+
+    # # Thực thi lệnh
+    # subprocess.run(command)
 
     # Tải và giải nén Poppler
     tools_support = "./tools"
