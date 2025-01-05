@@ -1,6 +1,6 @@
 # Database
-DB_USERNAME = "admin"
-DB_PASSWORD = "abc"
+DB_USERNAME = "root"
+DB_PASSWORD = ""
 DB_HOST = "localhost"
 DB_NAME = "ung_thu"
 TABLE_NAME = "trieu_chung_va_chuan_doan"

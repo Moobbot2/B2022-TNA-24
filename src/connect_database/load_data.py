@@ -29,6 +29,10 @@ try:
     df = create_dataframe_from_table_data(data_table, column_names)
     X = df[FEATURES]
     Y = df[KQ]
-except:
+except Exception as e:
+    # Log the error and provide fallback data
+    print(f"Error fetching data from the database: {e}")
     X = FEATURES
     Y = [KQ]
+    X = [[0] * len(FEATURES)]  # Placeholder: Single row of zeroed features
+    Y = [0]  # Placeholder: Single label

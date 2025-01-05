@@ -175,6 +175,7 @@ def api_medical_record():
                     text_symptoms.append(FEATURES_VN[index])
             return jsonify({"symptoms": text_symptoms})
     except Exception as e:
+        print("Error in api_medical_record:", str(e))
         return jsonify({"error": str(e)}), 500
 
 

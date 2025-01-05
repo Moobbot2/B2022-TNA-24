@@ -244,6 +244,8 @@
                                         sóc</label>
                                     <input type="file" class="form-control js-file" id="file-chamsoc" name="cham_soc"
                                         accept=".pdf">
+                                    <small class="form-text text-muted">Chỉ hỗ trợ định dạng PDF. Vui lòng tải lên file
+                                        Phiếu chăm sóc hợp lệ.</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -251,6 +253,8 @@
                                     <label for="file-dieutri" class="form-label h3">Tờ điều trị</label>
                                     <input type="file" class="form-control js-file" id="file-dieutri" name="dieu_tri"
                                         accept=".pdf">
+                                    <small class="form-text text-muted">Chỉ hỗ trợ định dạng PDF. Vui lòng tải lên file
+                                        Tờ điều trị hợp lệ.</small>
                                 </div>
                             </div>
                         </div>
@@ -275,12 +279,35 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Constants
+    const API_URL = "http://192.168.33.104:5000";
     var btn_udpate_data = '<button type="button" class="btn btn-warning js-update-data">Trường hợp đặc trưng</button>';
-    var link_connect = "http://127.0.0.1:5000"
+
+    // Utility functions
+    function validateSymptoms(symptoms) {
+        if (!Array.isArray(symptoms) || symptoms.length === 0) {
+            alert("Hãy chọn ít nhất một triệu chứng.");
+            return false;
+        }
+        return true;
+    }
+
+    function handleApiError(xhr) {
+        console.error("API Error:", xhr.responseJSON?.error || xhr.statusText);
+        alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+    }
+
+    function showStatus(message, isSuccess = true) {
+        const statusElement = $(".js_check_crc");
+        statusElement.text(message);
+        statusElement.css("color", isSuccess ? "green" : "red");
+    }
+
+    // AJAX functions
     function predict(data) {
         $.ajax({
             type: "POST",
-            url: link_connect + "/api_predict",
+            url: `${API_URL}/api_predict`,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(data),
             success: function (response) {
@@ -288,71 +315,94 @@
                 $(".js_check_crc").text(response.predictions);
                 $(".js-wrap").append(btn_udpate_data);
             },
-            error: function (xrh, error) {
-                console.log("Error:", xrh);
-                alert(xrh.responseJSON.error);
-            },
+            error: handleApiError,
         });
     }
 
     function insert_db(data) {
-        // Ask the user if they want to proceed
         if (confirm('Các triệu chứng này là trường hợp đặc trưng?')) {
-            // If the user confirms, make the AJAX call
             $.ajax({
                 type: "POST",
-                url: link_connect + "/api_save_data",
+                url: `${API_URL}/api_save_data`,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
                 success: function (response) {
-                    // Display the predicted result
                     $(".js_check_crc").text(response.predictions);
-                    if (response.error) {
-                        console.log(response.error);
-                    }
+                    if (response.error) console.log(response.error);
+
                 },
-                error: function (xrh, error) {
-                    console.log("Error:", xrh);
-                    alert(xrh.responseJSON.error);
-                },
+                error: handleApiError,
             });
         } else {
-            // If the user cancels, do nothing
             console.log('User canceled the operation.');
         }
     }
 
-    // Attach change event to checkboxes
-    $('input[name="symptom"]').change(function () {
-        $(".js_check_crc").text("");// Clear text when checkboxes change
-        $(".js-update-data").remove();
-    });
-
-    $('.js_form_submit').submit(function (e) {
-        e.preventDefault();
-        // $('.js_check_crc').text('');
-        // Get selected checkbox values
-        var selectedSymptoms = [];
-        $('input[name="symptom"]:checked').each(function () {
-            selectedSymptoms.push($(this).val());
-        });
-
-        // Check if at least one symptom is selected
-        if (selectedSymptoms.length === 0) {
-            alert('Please select at least one symptom.');
-            return;
+    function updateModel() {
+        if (confirm('Cập nhật model?')) {
+            $.ajax({
+                type: "POST",
+                url: `${API_URL}/api_update_module`,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    showStatus(response.message);
+                    alert(response.message);
+                },
+                error: handleApiError,
+            });
+        } else {
+            console.log('Người dùng đã hủy thao tác.');
         }
+    }
 
-        // Log the selected symptoms to the console
-        console.log(selectedSymptoms);
-        console.log('Call predict');
-        // Make a prediction request
-        predict({ features: selectedSymptoms });
+    $(document).off("click", ".js-update-model").on("click", ".js-update-model", function (e) {
+        e.preventDefault();
+        updateModel();
     });
 
-    $(document).on("click", ".js-update-data", function () {
-        $('.js_check_crc').text('');
-        // Get selected checkbox values
+    // Mã JavaScript để bật các ô checkbox dựa trên danh sách triệu chứng (symptoms)
+    function activateCheckboxes(symptoms) {
+        symptoms.forEach(function (symptom) {
+            // Lấy tất cả các ô checkbox có giá trị giống với symptom và thuộc tính name là "symptom"
+            const checkboxes = document.querySelectorAll(`input[value="${symptom}"][name="symptom"]`);
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        });
+    }
+
+    function handleFileUpload(event) {
+        $('.js-file').not(this).val('');
+        $('input[type="checkbox"]').prop('checked', false);
+
+        const file = $(this).prop('files')[0];
+        const nameFile = $(this).prop('name');
+        const formData = new FormData();
+
+        formData.append('file_pdf', file);
+        formData.append('file_name', nameFile);
+
+        showStatus("Đang xử lý file vui lòng chờ trong giây lát...");
+        $(".js-update-data").remove();
+
+        $.ajax({
+            type: "POST",
+            url: `${API_URL}/api_medical_record`,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                console.log("symptoms:", response.symptoms);
+                activateCheckboxes(response.symptoms);
+                showStatus("Trích xuất thành công!", true);
+                setTimeout(() => showStatus(""), 2000);
+            },
+            error: function(xhr) {
+                handleApiError(xhr);
+                $('input.js-file').val('');
+            },
+        });
+    }
+
+    function insertData(data) {
         var selectedSymptoms = [];
         $('input[name="symptom"]:checked').each(function () {
             selectedSymptoms.push($(this).val());
@@ -368,87 +418,47 @@
         console.log(selectedSymptoms);
         console.log("Call insert_db");
         // Make a prediction request
-        insert_db({ features: selectedSymptoms });
+        insert_db(data);
         $(".js-update-data").remove();
-    });
-
-    $(".js-update-model").click(function (e) {
-        e.preventDefault();
-        if (confirm('Cập nhật model?')) {
-            // If the user confirms, make the AJAX call
-            $.ajax({
-                type: "POST",
-                url: link_connect + "/api_update_module",
-                contentType: "application/json; charset=utf-8",
-                success: function (response) {
-                    // Display the predicted result
-                    $(".js_check_crc").text(response.message);
-                    alert(response.message)
-                },
-                error: function (xrh, error) {
-                    console.log("Error:", xrh);
-                    alert(xrh.responseJSON.error);
-                },
-            });
-        } else {
-            // If the user cancels, do nothing
-            console.log('User canceled the operation.');
-        }
-    });
-
-    // Mã JavaScript để bật các ô checkbox dựa trên danh sách triệu chứng (symptoms)
-    function activateCheckboxes(symptoms) {
-        symptoms.forEach(function (symptom) {
-            // Lấy tất cả các ô checkbox có giá trị giống với symptom và thuộc tính name là "symptom"
-            var checkboxes = document.querySelectorAll('input[value="' + symptom + '"][name="symptom"]');
-
-            // Đặt trạng thái checked cho tất cả các ô checkbox
-            checkboxes.forEach(function (checkbox) {
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
-            });
-        });
-    }
+    };
 
     $(".js-file").change(function () {
-        // Xóa nội dung của tất cả các input có class js-file khác
-        $('.js-file').not(this).val('');
+        handleFileUpload.call(this);
+    });
 
-        // Đặt tất cả các ô checkbox về trạng thái không chọn (unchecked)
-        $('input[type="checkbox"]').prop('checked', false);
-
-        var file = $(this).prop('files')[0];
-        console.log($(this).prop('name'));
-        var name_file = $(this).prop('name');
-        var formData = new FormData();
-        formData.append('file_pdf', file);
-        formData.append('file_name', name_file);
-        // Hiển thị thông báo đang xử lý
-        $(".js_check_crc").text("Đang xử lý file vui lòng chờ trong giây lát...");
-        $(".js-update-data").remove();
-
-        $.ajax({
-            type: "POST",
-            url: link_connect + "/api_medical_record",
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                console.log("symptoms: ", response.symptoms);
-                activateCheckboxes(response.symptoms);
-                // Hiển thị thông báo thành công
-                $(".js_check_crc").text("Trích xuất thành công!");
-                console.log("Trích xuất thành công!");
-                setTimeout(function () {
-                    $(".js_check_crc").text("");
-                }, 200);
-            },
-            error: function (xhr, error) {
-                console.log("Error:", xhr);
-            },
+    // Event listeners
+    $(document).ready(function () {
+        $('input[name="symptom"]').change(function () {
+            $(".js_check_crc").text("");
+            $(".js-update-data").remove();
         });
-    })
+
+        $('.js_form_submit').submit(function (e) {
+            e.preventDefault();
+            const selectedSymptoms = $('input[name="symptom"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            if (!validateSymptoms(selectedSymptoms)) return;
+            $(".js-update-data").remove();
+            predict({ features: selectedSymptoms });
+        });
+
+        $(document).on("click", ".js-update-data", function () {
+            const selectedSymptoms = $('input[name="symptom"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            if (!validateSymptoms(selectedSymptoms)) return;
+            console.log("selectedSymptoms: ", selectedSymptoms);
+            selectedSymptoms.push($('input[name="ket_qua"]').val());
+            insertData({ features: selectedSymptoms });
+            $(".js-update-data").remove();
+        });
+
+        //$(".js-update-model").click(updateModel);
+        $(".js-file").change(handleFileUpload);
+    });
 
 
 </script>

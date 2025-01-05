@@ -32,8 +32,8 @@ from tools.logging import save_log_model
 
 
 def train_evaluate_visualize_decision_tree(
-    x,
-    y,
+    X,
+    Y,
     classifier_type,
     save_model_path=SAVE_MODEL_PATH,
     save_tree_path=SAVE_TREE_PATH,
@@ -48,10 +48,16 @@ def train_evaluate_visualize_decision_tree(
         classifier = xgb.XGBClassifier(
             objective="binary:logistic", random_state=RAMDOM_STATE
         )
+
     # Chia dữ liệu thành tập huấn luyện và tập kiểm thử
-    X_train, X_test, y_train, y_test = train_test_split(
-        x, y, test_size=TEST_SIZE, random_state=RAMDOM_STATE
-    )
+    if len(X) > 1:
+        X_train, X_test, y_train, y_test = train_test_split(
+        X, Y, test_size=TEST_SIZE, random_state=RAMDOM_STATE
+        )
+    else:
+        print("Not enough data for splitting.")
+        return
+
     classifier.fit(X_train, y_train)
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     save_model_path = save_model_with_timestamp(
